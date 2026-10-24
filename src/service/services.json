@@ -1,0 +1,5 @@
+{
+  "id": "com.majlis.tv.service",
+  "description": "Majlis home helper",
+  "services": [{ "name": "com.majlis.tv.service" }]
+}

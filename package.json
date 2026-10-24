@@ -1,0 +1,21 @@
+{
+  "name": "majlis",
+  "version": "1.0.0",
+  "description": "A new interface for your TV, shaped around what you need: prayer times, Quran radio, Hijri dates and a phone remote.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "remove": "node scripts/deploy.mjs --remove",
+    "preview": "node scripts/preview.mjs",
+    "art": "node scripts/art/render.mjs"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "^3.2.0",
+    "ws": "^8.18.0",
+    "ws7": "npm:ws@^7.5.10"
+  }
+}

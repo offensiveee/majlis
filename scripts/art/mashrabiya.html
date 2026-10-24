@@ -1,0 +1,25 @@
+<!doctype html><link rel="stylesheet" href="_base.css"><svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <radialGradient id="glow" cx="50%" cy="42%" r="70%"><stop offset="0" stop-color="#ffdca0"/><stop offset=".35" stop-color="#e0a35a"/><stop offset=".75" stop-color="#7a4518"/><stop offset="1" stop-color="#2a160a"/></radialGradient>
+ <pattern id="lat" width="220" height="220" patternUnits="userSpaceOnUse">
+  <g fill="none" stroke-linejoin="round" transform="scale(1.375)">
+   <g id="w" stroke="#2a1709" stroke-width="16">
+    <path d="M80 8 L101 59 L152 80 L101 101 L80 152 L59 101 L8 80 L59 59 Z"/>
+    <rect x="31" y="31" width="98" height="98" transform="rotate(45 80 80)"/>
+    <rect x="0" y="0" width="160" height="160"/>
+    <circle cx="80" cy="80" r="16"/>
+   </g>
+   <g stroke="#7b4a22" stroke-width="2" opacity=".7" transform="translate(-2 -2)">
+    <path d="M80 8 L101 59 L152 80 L101 101 L80 152 L59 101 L8 80 L59 59 Z"/>
+    <rect x="31" y="31" width="98" height="98" transform="rotate(45 80 80)"/>
+    <circle cx="80" cy="80" r="16"/>
+   </g>
+  </g>
+ </pattern>
+ <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+ <radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#glow)"/>
+<rect width="1920" height="1080" fill="url(#lat)" filter="url(#soft)" transform="translate(0 -20)"/>
+<rect width="1920" height="1080" fill="url(#vig)"/>
+</svg>

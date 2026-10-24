@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120a05">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="المجلس">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="icon" href="/assets/icon-192.png">
+<title>المجلس</title>
+<style>
+  @font-face { font-family: "Kufi"; font-weight: 200; src: url(/assets/kufi-200.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: "Kufi"; font-weight: 400; src: url(/assets/kufi-400.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: "Kufi"; font-weight: 600; src: url(/assets/kufi-600.woff2) format("woff2"); font-display: swap; }
+  :root {
+    --bg: #110904; --bg2: #1b0f07; --card: rgba(255, 236, 200, .045); --card-b: rgba(232, 196, 128, .16);
+    --gold: #dfb86c; --gold-l: #f5dfaa; --gold-d: #9b7333; --cream: #f7efe1; --muted: rgba(247, 239, 225, .56);
+    --ok: #8fd19e; --danger: #ec8b74; --r: 20px;
+    --safe-b: env(safe-area-inset-bottom); --safe-t: env(safe-area-inset-top);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--cream); font: 400 15.5px/1.55 "Kufi", -apple-system, "SF Arabic", "Noto Sans Arabic", sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; padding: calc(var(--safe-t) + 4px) 0 calc(96px + var(--safe-b)); background:
+    radial-gradient(140% 55% at 50% -10%, #4a2b13 0%, rgba(74, 43, 19, 0) 60%),
+    radial-gradient(80% 40% at 100% 100%, rgba(120, 80, 30, .18), transparent 70%), var(--bg); background-attachment: fixed; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button, label, .pad { touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+
+  /* ---------- Header ---------- */
+  .top { padding: 14px 20px 6px; display: flex; align-items: center; gap: 12px; }
+  .top img { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+  .top .n { flex: 1; min-width: 0; }
+  .top .n b { display: block; font-weight: 400; font-size: 19px; color: var(--gold-l); letter-spacing: .3px; }
+  .top .n small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); flex: 0 0 auto; }
+  .dot.off { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+  .pchip { text-align: center; padding: 6px 12px; border-radius: 14px; background: var(--card); border: 1px solid var(--card-b); }
+  .pchip b { display: block; font-weight: 400; color: var(--gold-l); font-size: 14px; line-height: 1.3; }
+  .pchip small { color: var(--muted); font-size: 11.5px; }
+
+  main { max-width: 560px; margin: 0 auto; padding: 6px 16px 0; }
+  .tab { display: none; }
+  .tab.on { display: block; animation: rise .32s cubic-bezier(.2, .8, .2, 1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  .ttl { margin: 18px 4px 10px; font-size: 13px; color: var(--gold); letter-spacing: .4px; }
+  .card { background: var(--card); border: 1px solid var(--card-b); border-radius: var(--r); padding: 16px; margin-bottom: 12px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .card h3 { margin: 0 0 2px; font-weight: 400; font-size: 16px; color: var(--gold-l); }
+  .card p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  label.f { display: block; font-size: 12.5px; color: var(--muted); margin: 12px 4px 6px; }
+  input[type=text], input[type=url], input[type=tel], input[type=date], input[type=time], select {
+    width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--card-b); background: rgba(0, 0, 0, .28); outline: none; transition: border-color .2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  input:focus, select:focus { border-color: var(--gold); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 12px; padding: 14px; border: 0; border-radius: 15px; font-weight: 600; font-size: 15.5px; color: #24160a; background: linear-gradient(135deg, #f1d99f, #cf9f55); box-shadow: 0 8px 22px rgba(207, 159, 85, .22); transition: transform .12s, opacity .2s; }
+  .btn.ghost { background: rgba(0, 0, 0, .2); color: var(--gold-l); border: 1px solid var(--card-b); box-shadow: none; font-weight: 400; }
+  .btn.danger { background: transparent; color: var(--danger); border: 1px solid rgba(236, 139, 116, .35); box-shadow: none; font-weight: 400; }
+  .btn:active, .key:active, .chipb:active { transform: scale(.97); }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .sw { display: flex; align-items: center; gap: 12px; padding: 13px 2px; border-bottom: 1px solid rgba(232, 196, 128, .08); }
+  .sw:last-child { border-bottom: 0; padding-bottom: 2px; }
+  .sw .t { flex: 1; }
+  .sw .t small { display: block; color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .tog { position: relative; width: 50px; height: 30px; flex: 0 0 auto; }
+  .tog input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .tog i { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 30px; background: rgba(255, 255, 255, .1); transition: .25s; }
+  .tog i::after { content: ""; position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: #e9dcc6; box-shadow: 0 2px 6px rgba(0, 0, 0, .4); transition: .25s cubic-bezier(.3, 1.4, .5, 1); }
+  .tog input:checked + i { background: linear-gradient(135deg, #e6c47f, #b88a43); }
+  .tog input:checked + i::after { right: 23px; background: #fff; }
+
+  .seg { display: flex; padding: 4px; gap: 4px; border-radius: 15px; background: rgba(0, 0, 0, .28); border: 1px solid var(--card-b); overflow-x: auto; scrollbar-width: none; }
+  .seg::-webkit-scrollbar { display: none; }
+  .seg button { flex: 1 0 auto; padding: 9px 12px; border: 0; border-radius: 11px; background: transparent; color: var(--muted); font-size: 13.5px; white-space: nowrap; transition: background .2s, color .2s; }
+  .seg button.on { background: linear-gradient(135deg, #f1d99f, #cf9f55); color: #24160a; font-weight: 600; }
+
+  /* ---------- Remote ---------- */
+  .pad { position: relative; height: 300px; border-radius: 28px; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 0%, rgba(255, 220, 160, .1), rgba(0, 0, 0, .35)), #1a0f07;
+    border: 1px solid var(--card-b); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 14px 40px rgba(0, 0, 0, .35); touch-action: none; }
+  .pad .hint { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--muted); pointer-events: none; }
+  .pad .ring { position: absolute; top: 50%; left: 50%; width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%; border: 1px solid rgba(232, 196, 128, .25); pointer-events: none; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 13px; }
+  .pad .arrow { position: absolute; color: rgba(245, 223, 170, .35); font-size: 18px; pointer-events: none; transition: color .15s; font-family: -apple-system, sans-serif; }
+  .pad .a-u { top: 18px; left: 50%; transform: translateX(-50%); } .pad .a-d { bottom: 38px; left: 50%; transform: translateX(-50%); }
+  .pad .a-l { left: 18px; top: 50%; transform: translateY(-50%); } .pad .a-r { right: 18px; top: 50%; transform: translateY(-50%); }
+  .pad .arrow.hit { color: var(--gold-l); }
+  .ripple { position: absolute; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: rgba(245, 223, 170, .5); pointer-events: none; animation: rip .45s ease-out forwards; }
+  @keyframes rip { to { transform: scale(7); opacity: 0; } }
+  .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .key { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 72px; padding: 8px 4px; border-radius: 18px; border: 1px solid var(--card-b); background: var(--card); color: var(--cream); font-size: 12.5px; transition: transform .1s, background .2s, border-color .2s; }
+  .key svg.i { color: var(--gold-l); width: 24px; height: 24px; }
+  .key.sent { background: rgba(223, 184, 108, .18); border-color: var(--gold); }
+  .vol { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .vol .key { flex: 1; min-height: 58px; }
+  .vol .lvl { flex: 0 0 74px; text-align: center; }
+  .vol .lvl b { display: block; font-size: 26px; font-weight: 200; color: var(--gold-l); line-height: 1.1; }
+  .vol .lvl small { font-size: 11px; color: var(--muted); }
+  .apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; font-size: 11px; color: var(--cream); }
+  .app img { width: 58px; height: 58px; border-radius: 16px; object-fit: contain; background: #000; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
+  .app span { max-width: 76px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+
+  /* ---------- Guests ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .chipb { padding: 9px 14px; border-radius: 30px; border: 1px solid var(--card-b); background: rgba(0, 0, 0, .2); font-size: 13.5px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 11px 2px; border-bottom: 1px solid rgba(232, 196, 128, .08); }
+  .item:last-child { border-bottom: 0; }
+  .item img { width: 38px; height: 38px; border-radius: 10px; object-fit: contain; background: #000; }
+  .item .n { flex: 1; min-width: 0; }
+  .item .n small { display: block; color: var(--muted); font-size: 12px; }
+  .item.off .n, .item.off img { opacity: .4; }
+  .ib { width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--card-b); background: rgba(0, 0, 0, .2); display: inline-flex; align-items: center; justify-content: center; color: var(--gold-l); padding: 0; }
+  .ib svg.i { width: 18px; height: 18px; }
+
+  /* ---------- Looks ---------- */
+  .swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; font-size: 11.5px; color: var(--muted); }
+  .swatch i { width: 46px; height: 46px; border-radius: 50%; border: 2px solid transparent; box-shadow: inset 0 0 0 3px var(--bg2); transition: border-color .2s, transform .2s; }
+  .swatch.on i { border-color: var(--gold-l); transform: scale(1.06); }
+  .swatch.on { color: var(--gold-l); }
+  .frames { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .frame { border: 1px solid var(--card-b); background: rgba(0, 0, 0, .25); border-radius: 14px; padding: 8px 6px 6px; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .frame svg { width: 100%; height: 54px; color: var(--gold); }
+  .frame.on { border-color: var(--gold); color: var(--gold-l); background: rgba(223, 184, 108, .1); }
+
+  /* ---------- Photos ---------- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ph { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 1px solid var(--card-b); background: #000; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph.off img { opacity: .3; filter: grayscale(.8); }
+  .ph .tag { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 7px; font-size: 10.5px; background: linear-gradient(transparent, rgba(0, 0, 0, .75)); }
+  .ph button { position: absolute; top: 5px; left: 5px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .65); color: #fff; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .ph button svg.i { width: 15px; height: 15px; }
+  .ph button.restore { background: var(--gold); color: #24160a; }
+  .pick { position: relative; overflow: hidden; }
+  .pick input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; }
+
+  .times { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin-top: 12px; }
+  .times div { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(232, 196, 128, .12); font-size: 14px; }
+  .times b { font-weight: 400; color: var(--gold-l); direction: ltr; }
+  .play { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-b); background: rgba(0, 0, 0, .25); color: var(--gold-l); display: inline-flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 auto; }
+
+  /* ---------- Install hint ---------- */
+  .install { display: none; align-items: center; gap: 12px; }
+  .install.show { display: flex; }
+  .install img { width: 48px; height: 48px; border-radius: 13px; }
+  .install .x { margin-inline-start: auto; }
+
+  /* ---------- Tab bar ---------- */
+  nav { position: fixed; left: 12px; right: 12px; bottom: calc(10px + var(--safe-b)); max-width: 536px; margin: 0 auto; display: flex; padding: 7px; border-radius: 26px;
+    background: rgba(28, 17, 8, .82); border: 1px solid var(--card-b); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); box-shadow: 0 16px 40px rgba(0, 0, 0, .5); z-index: 5; }
+  nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 0 5px; border: 0; border-radius: 19px; background: transparent; color: var(--muted); font-size: 10.5px; transition: background .25s, color .25s; }
+  nav button.on { background: rgba(223, 184, 108, .14); color: var(--gold-l); }
+
+  .toast { position: fixed; top: calc(12px + var(--safe-t)); left: 50%; transform: translate(-50%, -160%); padding: 11px 20px; border-radius: 30px; background: rgba(36, 22, 10, .95); border: 1px solid var(--gold-d); color: var(--gold-l); font-size: 14px; white-space: nowrap; z-index: 9; transition: transform .35s cubic-bezier(.2, 1.2, .4, 1); box-shadow: 0 12px 30px rgba(0, 0, 0, .5); }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.err { border-color: var(--danger); color: #ffc0b0; }
+
+  /* ---------- Login ---------- */
+  #login { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 8; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(120% 60% at 50% 20%, #4a2b13, var(--bg) 70%); }
+  #login.show { display: flex; }
+  #login img { width: 96px; height: 96px; border-radius: 26px; box-shadow: 0 16px 40px rgba(0, 0, 0, .6); }
+  #login h1 { margin: 18px 0 2px; font-weight: 200; font-size: 28px; color: var(--gold-l); }
+  #login p { margin: 0 0 22px; color: var(--muted); font-size: 13.5px; text-align: center; }
+  .dots { display: flex; gap: 16px; margin-bottom: 26px; direction: ltr; }
+  .dots i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--gold); transition: background .15s, transform .15s; }
+  .dots i.f { background: var(--gold); transform: scale(1.1); }
+  .dots.shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .numpad { display: grid; grid-template-columns: repeat(3, 78px); gap: 14px; direction: ltr; }
+  .numpad button { height: 78px; border-radius: 50%; border: 1px solid var(--card-b); background: rgba(255, 236, 200, .05); font-size: 28px; font-weight: 200; color: var(--cream); }
+  .numpad button:active { background: rgba(223, 184, 108, .22); }
+  .numpad .blank { visibility: hidden; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-remote" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="5"/><circle cx="12" cy="8.5" r="2.2"/><path d="M10 14h4M10 17h4"/></symbol>
+  <symbol id="i-screen" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M8 20.5h8M12 17v3.5"/></symbol>
+  <symbol id="i-guests" viewBox="0 0 24 24"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8 5.5c0-1 1-1.2 1-2.2M12 5.5c0-1 1-1.2 1-2.2"/></symbol>
+  <symbol id="i-photos" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 15.5l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9v11h13V9"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-radio" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M4 9h11a5 5 0 0 1 0 10H8"/><path d="M8 5L4 9l4 4"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L3 10.5l7.5 3L14 21z"/><path d="M10.5 13.5L21 3"/></symbol>
+</svg>
+
+<div id="login">
+  <img src="/assets/icon-180.png" alt="">
+  <h1>المجلس</h1>
+  <p>اكتب الرمز الظاهر في إعدادات التلفاز</p>
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+  <div class="numpad" id="numpad"></div>
+</div>
+<div id="toast" class="toast"></div>
+
+<header class="top">
+  <img src="/assets/icon-180.png" alt="">
+  <div class="n"><b id="hName">المجلس</b><small><span class="dot" id="hDot"></span><span id="hNow">جاري الاتصال…</span></small></div>
+  <div class="pchip" id="hPrayer"><b id="hpName">—</b><small id="hpIn"></small></div>
+</header>
+
+<main>
+  <!-- ===== Remote ===== -->
+  <section class="tab on" id="t-remote">
+    <div class="card install" id="install">
+      <img src="/assets/icon-180.png" alt="">
+      <div><b style="font-weight:400;color:var(--gold-l)">ثبّت المجلس على شاشة جوالك</b><div style="color:var(--muted);font-size:12.5px" id="installHow"></div></div>
+      <button class="ib x" id="installX"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="pad" id="pad">
+      <span class="arrow a-u">▲</span><span class="arrow a-d">▼</span><span class="arrow a-l">◀</span><span class="arrow a-r">▶</span>
+      <div class="ring">موافق</div>
+      <div class="hint">اسحب للتنقل · المس للاختيار</div>
+    </div>
+    <div class="keys">
+      <button class="key" data-b="BACK"><svg class="i"><use href="#i-back"/></svg>رجوع</button>
+      <button class="key" data-act="home"><svg class="i"><use href="#i-home"/></svg>شاشة المجلس</button>
+      <button class="key" data-b="HOME"><svg class="i"><use href="#i-grid"/></svg>قائمة LG</button>
+      <button class="key" data-b="YELLOW"><svg class="i"><use href="#i-radio"/></svg>الإذاعة</button>
+      <button class="key" data-b="BLUE"><svg class="i"><use href="#i-wifi"/></svg>الواي فاي</button>
+      <button class="key" data-b="GREEN"><svg class="i"><use href="#i-image"/></svg>خلفية</button>
+    </div>
+    <div class="vol">
+      <button class="key" data-vol="down"><svg class="i"><use href="#i-minus"/></svg></button>
+      <div class="lvl"><b id="vol">–</b><small>الصوت</small></div>
+      <button class="key" data-vol="up"><svg class="i"><use href="#i-plus"/></svg></button>
+      <button class="key" data-act="mute"><svg class="i"><use href="#i-mute"/></svg></button>
+    </div>
+    <div class="ttl">افتح تطبيق</div>
+    <div class="card"><div class="apps" id="quickApps"></div></div>
+    <button class="btn danger" data-act="power"><svg class="i"><use href="#i-power"/></svg>إطفاء التلفاز</button>
+  </section>
+
+  <!-- ===== Screen ===== -->
+  <section class="tab" id="t-screen">
+    <div class="ttl">الاسم والترحيب</div>
+    <div class="card">
+      <label class="f">اسم المجلس</label><input id="majlisName" type="text">
+      <label class="f">بالإنجليزي</label><input id="majlisNameEn" type="text" dir="ltr">
+      <label class="f">الترحيب</label><input id="welcome" type="text">
+      <label class="f">سطر تحت الترحيب</label><input id="welcomeSub" type="text">
+      <button class="btn" id="saveTexts">حفظ</button>
+    </div>
+    <div class="ttl">الثيم</div>
+    <div class="card"><div class="swatches" id="themes"></div></div>
+    <div class="ttl">لون الزخارف</div>
+    <div class="card"><div class="swatches" id="accents"></div></div>
+    <div class="ttl">الإطار</div>
+    <div class="card"><div class="frames" id="frames"></div></div>
+    <div class="ttl">الحركة</div>
+    <div class="card">
+      <h3>وضع الهدوء</h3><p>صور متحركة مع الساعة والطقس والصلاة بعد فترة بدون استخدام</p>
+      <div class="seg" data-seg="ambientMin" data-num="1"><button data-v="0">متوقف</button><button data-v="5">٥ د</button><button data-v="10">١٠ د</button><button data-v="15">١٥ د</button><button data-v="30">٣٠ د</button></div>
+      <h3 style="margin-top:16px">تغيير الخلفية تلقائياً</h3>
+      <div class="seg" data-seg="rotate" data-num="1" style="margin-top:8px"><button data-v="0">متوقف</button><button data-v="10">١٠ د</button><button data-v="30">٣٠ د</button><button data-v="60">ساعة</button></div>
+    </div>
+  </section>
+
+  <!-- ===== Guests ===== -->
+  <section class="tab" id="t-guests">
+    <div class="ttl">رسالة على الشاشة</div>
+    <div class="card">
+      <p>تظهر بشكل جميل بملء الشاشة وتختفي بأي زر</p>
+      <div class="chips" id="quickMsgs"></div>
+      <input id="msgText" type="text" maxlength="80" placeholder="الرسالة">
+      <label class="f">سطر إضافي (اختياري)</label><input id="msgSub" type="text" maxlength="120">
+      <div class="sw"><div class="t">اعرضها حتى لو التلفاز على تطبيق ثاني<small>يفتح شاشة المجلس ويعرض الرسالة</small></div><label class="tog"><input type="checkbox" id="msgFull"><i></i></label></div>
+      <button class="btn" id="sendMsg"><svg class="i"><use href="#i-send"/></svg>أرسل</button>
+    </div>
+    <div class="ttl">المناسبات والترحيب المجدول</div>
+    <div class="card">
+      <p>قبلها يظهر عدّاد تحت الترحيب، ووقتها تطلع بطاقة «حيّاكم الله» باسم المناسبة</p>
+      <div id="events"></div>
+      <label class="f">المناسبة</label><input id="evName" type="text" placeholder="مثل: عزيمة العائلة">
+      <div class="row"><div><label class="f">التاريخ</label><input id="evDate" type="date" dir="ltr"></div><div><label class="f">الوقت</label><input id="evTime" type="time" dir="ltr" value="21:00"></div></div>
+      <div class="sw"><div class="t">اعرض البطاقة حتى لو على تطبيق ثاني</div><label class="tog"><input type="checkbox" id="evFull"><i></i></label></div>
+      <button class="btn" id="addEvent">أضف</button>
+    </div>
+    <div class="ttl">واي فاي الضيوف</div>
+    <div class="card">
+      <label class="f">اسم الشبكة</label><input id="ssid" type="text" dir="ltr" autocomplete="off" autocapitalize="off">
+      <label class="f">كلمة المرور</label><input id="wpass" type="text" dir="ltr" autocomplete="off" autocapitalize="off">
+      <label class="f">الحماية</label>
+      <div class="seg" id="wtype"><button data-v="WPA">WPA/WPA2</button><button data-v="WEP">WEP</button><button data-v="nopass">بدون</button></div>
+      <div class="row"><button class="btn" id="saveWifi">حفظ</button><button class="btn ghost" id="showWifi">اعرضه الآن</button></div>
+    </div>
+  </section>
+
+  <!-- ===== Photos ===== -->
+  <section class="tab" id="t-photos">
+    <div class="card">
+      <h3>أضف صور</h3><p>من جوالك أو برابط صورة من الإنترنت</p>
+      <label class="btn pick"><svg class="i"><use href="#i-photos"/></svg>اختر من الجوال<input id="files" type="file" accept="image/*" multiple></label>
+      <div class="row" style="align-items:flex-end"><input id="imgUrl" type="url" placeholder="https://…" dir="ltr" style="margin-top:12px"><button class="btn ghost" id="addUrl" style="flex:0 0 84px">أضف</button></div>
+    </div>
+    <div class="ttl">الخلفيات</div>
+    <div class="card"><div class="grid" id="bgShown"></div></div>
+    <div id="bgRemovedWrap" style="display:none"><div class="ttl">المحذوفة</div><div class="card"><div class="grid" id="bgRemoved"></div></div></div>
+  </section>
+
+  <!-- ===== Settings ===== -->
+  <section class="tab" id="t-settings">
+    <div class="ttl">الصلاة</div>
+    <div class="card">
+      <select id="city"></select>
+      <div class="times" id="times"></div>
+    </div>
+    <div class="card">
+      <div class="sw"><div class="t">تنبيه على شاشة المجلس<small>شاشة كاملة وقت الأذان</small></div><label class="tog"><input type="checkbox" data-pref="alertOverlay"><i></i></label></div>
+      <div class="sw"><div class="t">إشعار فوق أي تطبيق<small>وأنتم تشاهدون نتفليكس أو يوتيوب</small></div><label class="tog"><input type="checkbox" data-pref="tvToast"><i></i></label></div>
+      <div class="sw"><div class="t">النغمة الهادئة<small>إذا ما اخترت صوت أذان</small></div><label class="tog"><input type="checkbox" data-pref="chime"><i></i></label></div>
+      <label class="f">وقت الأذان أثناء مشاهدة تطبيق</label>
+      <div class="seg" data-seg="adhanAction"><button data-v="off">لا شيء</button><button data-v="pause">إيقاف الفيديو</button><button data-v="lower">خفض الصوت</button></div>
+      <label class="f">تذكير قبل الأذان</label>
+      <div class="seg" data-seg="remind" data-num="1"><button data-v="0">متوقف</button><button data-v="5">٥ د</button><button data-v="10">١٠ د</button><button data-v="15">١٥ د</button></div>
+    </div>
+    <div class="ttl">صوت الأذان</div>
+    <div class="card" id="adhans"></div>
+    <div class="ttl">الجمعة</div>
+    <div class="card">
+      <div class="sw"><div class="t">وضع الجمعة<small>تذكير بسورة الكهف وتسمية صلاة الجمعة</small></div><label class="tog"><input type="checkbox" data-pref="friday"><i></i></label></div>
+      <div class="sw"><div class="t">إذاعة القرآن صباح الجمعة<small>تشتغل تلقائياً على شاشة المجلس</small></div><label class="tog"><input type="checkbox" data-pref="fridayRadio"><i></i></label></div>
+    </div>
+    <div class="ttl">التلفاز</div>
+    <div class="card">
+      <div class="sw"><div class="t">زر الرئيسية يفتح شاشة المجلس<small>بدل شاشة LG</small></div><label class="tog"><input type="checkbox" data-pref="takeover"><i></i></label></div>
+      <label class="f">إطفاء تلقائي لحفظ الطاقة</label>
+      <div class="seg" data-seg="sleepMin" data-num="1"><button data-v="0">متوقف</button><button data-v="15">١٥ د</button><button data-v="30">٣٠ د</button><button data-v="60">ساعة</button><button data-v="240">٤ ساعات</button></div>
+    </div>
+    <div class="ttl">التطبيقات على الشاشة</div>
+    <div class="card"><div id="appList"></div></div>
+  </section>
+</main>
+
+<nav id="nav">
+  <button data-t="remote" class="on"><svg class="i"><use href="#i-remote"/></svg>الريموت</button>
+  <button data-t="screen"><svg class="i"><use href="#i-screen"/></svg>الشاشة</button>
+  <button data-t="guests"><svg class="i"><use href="#i-guests"/></svg>الضيوف</button>
+  <button data-t="photos"><svg class="i"><use href="#i-photos"/></svg>الصور</button>
+  <button data-t="settings"><svg class="i"><use href="#i-settings"/></svg>الإعدادات</button>
+</nav>
+
+<audio id="preview"></audio>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var qa = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var PIN = ""; try { PIN = localStorage.getItem("majlisPin") || ""; } catch (e) {}
+  var state = { prefs: {}, status: {} }, data = {}, apps = [];
+  var THEMES = [{ id: "gold", ar: "ذهبي", c: "linear-gradient(135deg,#4a2a12,#140c07)" }, { id: "emerald", ar: "زمردي", c: "linear-gradient(135deg,#0f4433,#04140f)" }, { id: "sadu", ar: "سدو", c: "linear-gradient(135deg,#7a1a1a,#170606)" }];
+  var ACCENTS = [{ id: "", ar: "ذهبي", c: "#dcb56a" }, { id: "silver", ar: "فضي", c: "#c9cfd6" }, { id: "bronze", ar: "نحاسي", c: "#c98c5c" }, { id: "rose", ar: "وردي", c: "#d8a293" }, { id: "turquoise", ar: "فيروزي", c: "#6cc3bf" }, { id: "pearl", ar: "لؤلؤي", c: "#efe8d8" }];
+  var FRAMES = [
+    { id: "palace", ar: "قصر", s: '<rect x="4" y="4" width="92" height="52" rx="2" fill="none" stroke="currentColor"/><path d="M4 18V8a4 4 0 0 1 4-4h10M96 18V8a4 4 0 0 0-4-4H82M4 42v10a4 4 0 0 0 4 4h10M96 42v10a4 4 0 0 1-4 4H82" stroke="currentColor" stroke-width="2.4" fill="none"/>' },
+    { id: "najdi", ar: "نجدي", s: '<rect x="4" y="8" width="92" height="44" fill="none" stroke="currentColor"/><path d="M8 8V5h3V3h6v2h3v3M26 8V5h3V3h6v2h3v3M44 8V5h3V3h6v2h3v3M62 8V5h3V3h6v2h3v3M80 8V5h3V3h6v2h3v3" fill="currentColor"/>' },
+    { id: "mashrabiya", ar: "مشربية", s: '<rect x="4" y="4" width="92" height="52" fill="none" stroke="currentColor"/><g fill="none" stroke="currentColor"><path d="M12 5l3 5 5 3-5 3-3 5-3-5-5-3 5-3z"/><path d="M88 5l3 5 5 3-5 3-3 5-3-5-5-3 5-3z"/><path d="M12 39l3 5 5 3-5 3-3 5-3-5-5-3 5-3z"/><path d="M88 39l3 5 5 3-5 3-3 5-3-5-5-3 5-3z"/></g>' },
+    { id: "arch", ar: "محراب", s: '<path d="M4 56V10h38c4 0 6-2 8-6 2 4 4 6 8 6h38v46z" fill="none" stroke="currentColor"/>' },
+    { id: "minimal", ar: "بسيط", s: '<rect x="5" y="5" width="90" height="50" rx="6" fill="none" stroke="currentColor"/>' },
+    { id: "none", ar: "بدون", s: '<rect x="5" y="5" width="90" height="50" rx="6" fill="none" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>' }
+  ];
+  var QUICK = [["☕ القهوة جاهزة", ""], ["🍵 الشاي جاهز", ""], ["🍽️ العشاء جاهز", "تفضلوا"], ["حيّاكم الله", "نورتونا"], ["🕌 حان وقت الصلاة", ""]];
+
+  function arD(n) { return String(n).replace(/\d/g, function (d) { return "٠١٢٣٤٥٦٧٨٩"[d]; }); }
+  function t12(d) { var h = d.getHours() % 12 || 12, m = d.getMinutes(); return h + ":" + (m < 10 ? "0" : "") + m + (d.getHours() < 12 ? " ص" : " م"); }
+  function say(t, err) { var m = $("toast"); m.textContent = t; m.className = "toast show" + (err ? " err" : ""); clearTimeout(say.t); say.t = setTimeout(function () { m.className = "toast"; }, 2000); }
+  function buzz(ms) { if (navigator.vibrate) navigator.vibrate(ms || 10); }
+  function api(method, url, body, type) {
+    var opts = { method: method, headers: {} };
+    if (body !== undefined) { opts.body = type ? body : JSON.stringify(body); opts.headers["Content-Type"] = type || "application/json"; }
+    return fetch(url + (url.indexOf("?") === -1 ? "?" : "&") + "pin=" + encodeURIComponent(PIN), opts).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 403) { showLogin(); throw new Error("الرمز غير صحيح"); }
+        if (!r.ok) throw new Error(j.error || "صار خطأ");
+        return j;
+      });
+    });
+  }
+  function fail(e) { say(e.message, true); }
+  function save(obj, msg) {
+    return api("POST", "/api/prefs", obj).then(function () { for (var k in obj) state.prefs[k] = obj[k]; if (msg !== false) say(msg || "تم الحفظ ✓"); }).catch(fail);
+  }
+
+  // ---------- Login (PIN pad) ----------
+  var entry = "";
+  (function () {
+    var keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
+    $("numpad").innerHTML = keys.map(function (k) { return "<button" + (k ? "" : ' class="blank"') + ' data-k="' + k + '">' + k + "</button>"; }).join("");
+    $("numpad").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b || !b.dataset.k) return;
+      buzz(8);
+      if (b.dataset.k === "⌫") entry = entry.slice(0, -1); else if (entry.length < 4) entry += b.dataset.k;
+      qa("#dots i").forEach(function (d, i) { d.classList.toggle("f", i < entry.length); });
+      if (entry.length === 4) tryPin(entry);
+    });
+  })();
+  function tryPin(p) {
+    fetch("/api/check?pin=" + encodeURIComponent(p)).then(function (r) {
+      if (!r.ok) {
+        buzz(60); $("dots").classList.add("shake");
+        setTimeout(function () { $("dots").classList.remove("shake"); entry = ""; qa("#dots i").forEach(function (d) { d.classList.remove("f"); }); }, 420);
+        return;
+      }
+      PIN = p; try { localStorage.setItem("majlisPin", PIN); } catch (e) {}
+      $("login").classList.remove("show"); loadAll();
+    });
+  }
+  function showLogin() { entry = ""; qa("#dots i").forEach(function (d) { d.classList.remove("f"); }); $("login").classList.add("show"); }
+
+  // ---------- Tabs ----------
+  qa("#nav button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      buzz(6);
+      qa("#nav button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      qa(".tab").forEach(function (t) { t.classList.toggle("on", t.id === "t-" + b.dataset.t); });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (b.dataset.t === "remote") refreshVolume();
+    });
+  });
+
+  // ---------- Remote: touchpad (swipe = arrows, tap = OK) ----------
+  var pad = $("pad"), start = null, moved = 0;
+  function press(button) { return api("POST", "/api/remote?button=" + button).catch(fail); }
+  function arrowHit(cls) { var a = pad.querySelector("." + cls); a.classList.add("hit"); setTimeout(function () { a.classList.remove("hit"); }, 160); }
+  function ripple(x, y) { var r = pad.getBoundingClientRect(), d = document.createElement("div"); d.className = "ripple"; d.style.left = (x - r.left) + "px"; d.style.top = (y - r.top) + "px"; pad.appendChild(d); setTimeout(function () { d.remove(); }, 460); }
+  pad.addEventListener("pointerdown", function (e) { start = { x: e.clientX, y: e.clientY, t: Date.now() }; moved = 0; try { pad.setPointerCapture(e.pointerId); } catch (err) {} });
+  pad.addEventListener("pointermove", function (e) {
+    if (!start) return;
+    var dx = e.clientX - start.x, dy = e.clientY - start.y, step = 46;
+    if (Math.abs(dx) < step && Math.abs(dy) < step) return;
+    var dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "RIGHT" : "LEFT") : (dy > 0 ? "DOWN" : "UP");
+    press(dir); buzz(7); moved++;
+    arrowHit({ RIGHT: "a-r", LEFT: "a-l", UP: "a-u", DOWN: "a-d" }[dir]);
+    start = { x: e.clientX, y: e.clientY, t: start.t };
+  });
+  pad.addEventListener("pointerup", function (e) {
+    if (start && !moved && Date.now() - start.t < 450) { press("ENTER"); buzz(14); ripple(e.clientX, e.clientY); }
+    start = null;
+  });
+  pad.addEventListener("pointercancel", function () { start = null; });
+
+  // ---------- Remote: buttons ----------
+  var muted = false;
+  function flash(el) { el.classList.add("sent"); setTimeout(function () { el.classList.remove("sent"); }, 220); }
+  $("t-remote").addEventListener("click", function (e) {
+    var el = e.target.closest("button"); if (!el || el.dataset.vol) return;
+    if (el.dataset.b) { buzz(); flash(el); press(el.dataset.b); if (el.dataset.b === "YELLOW") say("الإذاعة على شاشة المجلس"); return; }
+    var a = el.dataset.act;
+    if (a === "home") { buzz(); flash(el); api("POST", "/api/home").then(function () { say("فتحت شاشة المجلس ✓"); }).catch(fail); }
+    else if (a === "mute") { buzz(); flash(el); api("POST", "/api/volume?action=mute&on=" + (muted ? 0 : 1)).then(function (r) { muted = !!r.muteStatus; showVol(); say(muted ? "تم كتم الصوت" : "رجع الصوت"); }).catch(fail); }
+    else if (a === "power") { if (confirm("إطفاء التلفاز؟")) api("POST", "/api/power?action=off").then(function () { say("تم الإطفاء"); }).catch(fail); }
+  });
+  // Volume: tap for one step, hold to keep going.
+  var volNow = null, holdTimer = null;
+  function showVol() { $("vol").textContent = muted ? "—" : (volNow == null ? "–" : arD(volNow)); }
+  function volStep(dir) { return api("POST", "/api/volume?action=" + dir).then(function (r) { if (r.volume !== undefined) { volNow = r.volume; muted = false; showVol(); } }).catch(fail); }
+  function stopHold() { clearTimeout(holdTimer); clearInterval(holdTimer); holdTimer = null; }
+  qa("[data-vol]").forEach(function (b) {
+    var dir = b.dataset.vol;
+    b.addEventListener("pointerdown", function () {
+      buzz(); flash(b); volStep(dir); stopHold();
+      holdTimer = setTimeout(function () { holdTimer = setInterval(function () { buzz(5); volStep(dir); }, 180); }, 380);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, stopHold); });
+  });
+  function refreshVolume() {
+    api("GET", "/api/volume").then(function (v) { var s = v.volumeStatus || v; if (s.volume !== undefined) volNow = s.volume; muted = !!(s.muteStatus || s.muted); showVol(); }).catch(function () {});
+  }
+
+  // ---------- Install hint ----------
+  (function () {
+    var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
+    var dismissed = false; try { dismissed = localStorage.getItem("installHint") === "x"; } catch (e) {}
+    if (standalone || dismissed) return;
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    $("installHow").textContent = ios ? "من Safari: زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»" : "من قائمة المتصفح ⋮ ثم «إضافة إلى الشاشة الرئيسية»";
+    $("install").classList.add("show");
+    $("installX").onclick = function () { $("install").classList.remove("show"); try { localStorage.setItem("installHint", "x"); } catch (e) {} };
+  })();
+
+  // ---------- Screen ----------
+  $("saveTexts").onclick = function () { save({ majlisName: $("majlisName").value, majlisNameEn: $("majlisNameEn").value, welcome: $("welcome").value, welcomeSub: $("welcomeSub").value }); };
+  function renderLooks() {
+    var p = state.prefs;
+    $("themes").innerHTML = THEMES.map(function (t) { return '<button class="swatch' + (p.theme === t.id ? " on" : "") + '" data-theme="' + t.id + '"><i style="background:' + t.c + '"></i>' + t.ar + "</button>"; }).join("");
+    $("accents").innerHTML = ACCENTS.map(function (a) { return '<button class="swatch' + ((p.accent || "") === a.id ? " on" : "") + '" data-accent="' + a.id + '"><i style="background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 55%),' + a.c + '"></i>' + a.ar + "</button>"; }).join("");
+    $("frames").innerHTML = FRAMES.map(function (f) { return '<button class="frame' + ((p.frame || "palace") === f.id ? " on" : "") + '" data-frame="' + f.id + '"><svg viewBox="0 0 100 60">' + f.s + "</svg>" + f.ar + "</button>"; }).join("");
+  }
+  $("t-screen").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.theme !== undefined) { buzz(); save({ theme: b.dataset.theme }, "تغير الثيم ✓").then(renderLooks); }
+    else if (b.dataset.accent !== undefined) { buzz(); save({ accent: b.dataset.accent }, "تغير اللون ✓").then(renderLooks); }
+    else if (b.dataset.frame !== undefined) { buzz(); save({ frame: b.dataset.frame }, "تغير الإطار ✓").then(renderLooks); }
+  });
+  // Segmented controls that save straight to a setting.
+  qa("[data-seg]").forEach(function (seg) {
+    seg.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      buzz(); var o = {}; o[seg.dataset.seg] = seg.dataset.num ? +b.dataset.v : b.dataset.v;
+      setSeg(seg, b.dataset.v); save(o);
+    });
+  });
+  function setSeg(seg, v) { qa("button", seg).forEach(function (b) { b.classList.toggle("on", b.dataset.v === String(v)); }); }
+  qa("[data-pref]").forEach(function (cb) { cb.onchange = function () { buzz(); var o = {}; o[cb.dataset.pref] = cb.checked; save(o); }; });
+
+  // ---------- Guests ----------
+  $("quickMsgs").innerHTML = QUICK.map(function (q, i) { return '<button class="chipb" data-q="' + i + '">' + q[0] + "</button>"; }).join("");
+  $("quickMsgs").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; var q = QUICK[+b.dataset.q]; $("msgText").value = q[0]; $("msgSub").value = q[1]; buzz(); });
+  $("sendMsg").onclick = function () {
+    var t = $("msgText").value.trim(); if (!t) { say("اكتب الرسالة", true); return; }
+    api("POST", "/api/toast", { message: t, sub: $("msgSub").value.trim(), fullscreen: $("msgFull").checked }).then(function () { say("وصلت الرسالة ✓"); buzz(20); $("msgText").value = ""; $("msgSub").value = ""; }).catch(fail);
+  };
+  function renderEvents() {
+    var el = $("events"), list = state.prefs.events || [];
+    el.innerHTML = "";
+    list.forEach(function (ev, i) {
+      var d = document.createElement("div"); d.className = "item";
+      var when = ev.at ? new Date(ev.at) : null;
+      d.innerHTML = '<div class="n"><span></span><small></small></div><button class="ib"><svg class="i"><use href="#i-x"/></svg></button>';
+      d.querySelector("span").textContent = ev.name;
+      d.querySelector("small").textContent = (ev.date || "") + (when ? " · " + t12(when) : "") + (ev.fullscreen ? " · بملء الشاشة" : "");
+      d.querySelector("button").onclick = function () { var l = list.slice(); l.splice(i, 1); save({ events: l }, "تم الحذف").then(renderEvents); };
+      el.appendChild(d);
+    });
+  }
+  $("addEvent").onclick = function () {
+    var n = $("evName").value.trim(), dt = $("evDate").value, tm = $("evTime").value || "21:00";
+    if (!n || !dt) { say("اكتب الاسم والتاريخ", true); return; }
+    var at = new Date(dt + "T" + tm + ":00").getTime();
+    var l = (state.prefs.events || []).slice(); l.push({ name: n, date: dt, time: tm, at: at, fullscreen: $("evFull").checked });
+    l.sort(function (a, b) { return (a.at || 0) - (b.at || 0); });
+    save({ events: l }, "تمت الإضافة ✓").then(function () { $("evName").value = ""; renderEvents(); });
+  };
+  $("wtype").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setSeg($("wtype"), b.dataset.v); });
+  $("saveWifi").onclick = function () { var on = $("wtype").querySelector(".on"); save({ wifi: { ssid: $("ssid").value.trim(), pass: $("wpass").value, type: on ? on.dataset.v : "WPA" } }); };
+  $("showWifi").onclick = function () { press("BLUE"); say("ظهر على التلفاز ✓"); };
+
+  // ---------- Photos ----------
+  function resize(file) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, 1920 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("تعذر قراءة الصورة")); }, "image/jpeg", 0.86);
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = function () { reject(new Error("تعذر قراءة الصورة")); };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  $("files").onchange = function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []), i = 0;
+    (function next() {
+      if (i >= files.length) { say("أضفت " + arD(files.length) + " صور ✓"); e.target.value = ""; loadState(); return; }
+      say("رفع " + arD(i + 1) + " من " + arD(files.length) + "…");
+      resize(files[i++]).then(function (b) { return api("POST", "/api/photos", b, "image/jpeg"); }).then(next).catch(fail);
+    })();
+  };
+  $("addUrl").onclick = function () { say("جاري التحميل…"); api("POST", "/api/photos/url", { url: $("imgUrl").value.trim() }).then(function () { $("imgUrl").value = ""; say("تمت الإضافة ✓"); loadState(); }).catch(fail); };
+  function renderBackgrounds() {
+    var hidden = state.prefs.hiddenBg || [], list = [];
+    (data.backgrounds || []).forEach(function (b) { list.push({ key: b.file, name: b.ar, url: "/builtin/" + b.file.split("/").pop(), builtIn: true }); });
+    (state.photos || []).forEach(function (p, i) { list.push({ key: "photo:" + p.name, photo: p.name, name: "صورة " + arD(i + 1), url: "/photos/" + encodeURIComponent(p.name) }); });
+    $("bgShown").innerHTML = ""; $("bgRemoved").innerHTML = ""; var nr = 0;
+    list.forEach(function (b) {
+      var off = hidden.indexOf(b.key) !== -1, d = document.createElement("div");
+      d.className = "ph" + (off ? " off" : "");
+      d.innerHTML = '<img loading="lazy"><div class="tag"></div><button><svg class="i"><use href="#i-' + (off ? "undo" : "x") + '"/></svg></button>';
+      d.querySelector("img").src = b.url; d.querySelector(".tag").textContent = b.name;
+      var btn = d.querySelector("button");
+      if (off) { btn.className = "restore"; nr++; btn.onclick = function () { setHidden(b.key, false); }; $("bgRemoved").appendChild(d); }
+      else {
+        btn.onclick = function () {
+          if (b.builtIn) return setHidden(b.key, true);
+          if (!confirm("حذف الصورة من التلفاز؟")) return;
+          api("DELETE", "/api/photos/" + encodeURIComponent(b.photo)).then(function () { say("تم الحذف"); loadState(); }).catch(fail);
+        };
+        $("bgShown").appendChild(d);
+      }
+    });
+    $("bgRemovedWrap").style.display = nr ? "block" : "none";
+  }
+  function setHidden(key, on) {
+    var h = (state.prefs.hiddenBg || []).slice(), i = h.indexOf(key);
+    if (on && i === -1) h.push(key); if (!on && i !== -1) h.splice(i, 1);
+    save({ hiddenBg: h }, on ? "تم الحذف" : "رجعت ✓").then(renderBackgrounds);
+  }
+
+  // ---------- Settings ----------
+  $("city").onchange = function () { save({ city: $("city").value }).then(function () { setTimeout(loadState, 900); }); };
+  function renderTimes() {
+    $("times").innerHTML = ((state.status || {}).prayers || []).slice(0, 5).map(function (p) { return "<div><span>" + p.name + "</span><b>" + t12(new Date(p.at)) + "</b></div>"; }).join("");
+  }
+  var previewing = "";
+  function renderAdhans() {
+    var cur = state.prefs.adhanSound || "", list = [{ id: "", ar: "بدون (نغمة هادئة)" }].concat(data.adhans || []);
+    $("adhans").innerHTML = list.map(function (a) {
+      return '<div class="sw"><div class="t">' + a.ar + "</div>" + (a.url ? '<button class="play" data-prev="' + a.id + '"><svg class="i"><use href="#i-' + (previewing === a.id ? "stop" : "play") + '"/></svg></button>' : "") +
+        '<label class="tog"><input type="radio" name="adhan" value="' + a.id + '"' + (cur === a.id ? " checked" : "") + "><i></i></label></div>";
+    }).join("");
+  }
+  $("adhans").addEventListener("change", function (e) { if (e.target.name === "adhan") { buzz(); save({ adhanSound: e.target.value }, "تم اختيار الأذان ✓"); } });
+  $("adhans").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-prev]"); if (!b) return;
+    var a = (data.adhans || []).filter(function (x) { return x.id === b.dataset.prev; })[0], au = $("preview");
+    if (previewing === a.id) { au.pause(); previewing = ""; }
+    else { au.src = a.url; au.play().catch(function () { say("تعذر التشغيل", true); }); previewing = a.id; }
+    renderAdhans();
+  });
+  $("preview").addEventListener("ended", function () { previewing = ""; renderAdhans(); });
+  function orderedApps() {
+    var order = state.prefs.order || [], idx = {}, base = {};
+    order.forEach(function (id, i) { idx[id] = i; });
+    (data.baseApps || []).forEach(function (a, i) { base[a.id] = i; });
+    function rank(a) { return idx[a.id] !== undefined ? idx[a.id] : base[a.id] !== undefined ? 1000 + base[a.id] : 5000; }
+    return apps.slice().sort(function (a, b) { return rank(a) - rank(b) || a.title.localeCompare(b.title); });
+  }
+  function renderApps() {
+    var list = orderedApps(), hidden = state.prefs.hidden || [];
+    $("appList").innerHTML = ""; $("quickApps").innerHTML = "";
+    list.forEach(function (a, i) {
+      var off = hidden.indexOf(a.id) !== -1, d = document.createElement("div");
+      d.className = "item" + (off ? " off" : "");
+      d.innerHTML = '<img loading="lazy"><div class="n"></div><button class="ib" data-a="up"><svg class="i"><use href="#i-up"/></svg></button><button class="ib" data-a="down"><svg class="i"><use href="#i-down"/></svg></button><button class="ib" data-a="eye"><svg class="i"><use href="#i-' + (off ? "eyeoff" : "eye") + '"/></svg></button>';
+      d.querySelector("img").src = "/icon/" + encodeURIComponent(a.id);
+      d.querySelector(".n").textContent = a.title;
+      d.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return; buzz();
+        if (b.dataset.a === "eye") { var h = hidden.slice(), j = h.indexOf(a.id); if (j === -1) h.push(a.id); else h.splice(j, 1); save({ hidden: h }, false).then(renderApps); return; }
+        var ids = list.map(function (x) { return x.id; }), to = i + (b.dataset.a === "up" ? -1 : 1);
+        if (to < 0 || to >= ids.length) return;
+        ids.splice(i, 1); ids.splice(to, 0, a.id); save({ order: ids }, false).then(renderApps);
+      });
+      $("appList").appendChild(d);
+      if (!off && $("quickApps").children.length < 12) {
+        var q = document.createElement("button"); q.className = "app";
+        q.innerHTML = '<img loading="lazy"><span></span>';
+        q.querySelector("img").src = "/icon/" + encodeURIComponent(a.id); q.querySelector("span").textContent = a.title;
+        q.onclick = function () { buzz(); api("POST", "/api/launch?id=" + encodeURIComponent(a.id)).then(function () { say("فتح " + a.title); }).catch(fail); };
+        $("quickApps").appendChild(q);
+      }
+    });
+  }
+
+  // ---------- Live header ----------
+  function renderHeader() {
+    var st = state.status || {}, p = state.prefs || {};
+    $("hName").textContent = p.majlisName || "المجلس";
+    var off = st.power && st.power !== "Active";
+    $("hDot").className = "dot" + (off ? " off" : "");
+    $("hNow").textContent = off ? "التلفاز مطفأ" : (st.nowApp ? "على الشاشة: " + st.nowApp.title : "متصل");
+    var next = (st.prayers || [])[0];
+    if (next) {
+      var m = Math.max(0, Math.round((new Date(next.at) - Date.now()) / 60000));
+      $("hpName").textContent = next.name;
+      $("hpIn").textContent = m < 60 ? "بعد " + arD(m) + " د" : "بعد " + arD(Math.floor(m / 60)) + ":" + arD((m % 60 < 10 ? "0" : "") + (m % 60));
+    }
+  }
+
+  // ---------- Load ----------
+  function fill() {
+    var p = state.prefs;
+    ["majlisName", "majlisNameEn", "welcome", "welcomeSub"].forEach(function (k) { if (document.activeElement !== $(k)) $(k).value = p[k] || ""; });
+    qa("[data-seg]").forEach(function (seg) { setSeg(seg, p[seg.dataset.seg]); });
+    qa("[data-pref]").forEach(function (cb) { cb.checked = !!p[cb.dataset.pref]; });
+    var w = p.wifi || {};
+    if (document.activeElement !== $("ssid")) $("ssid").value = w.ssid || "";
+    if (document.activeElement !== $("wpass")) $("wpass").value = w.pass || "";
+    setSeg($("wtype"), w.type || "WPA");
+    if ($("city").options.length) $("city").value = p.city;
+    renderLooks(); renderHeader();
+  }
+  function loadState() {
+    return fetch("/api/state").then(function (r) { return r.json(); }).then(function (s) {
+      state = s; fill(); renderBackgrounds(); renderTimes(); renderEvents(); renderAdhans();
+    }).catch(function () { $("hDot").className = "dot off"; $("hNow").textContent = "غير متصل بالتلفاز"; });
+  }
+  function loadAll() {
+    fetch("/api/data").then(function (r) { return r.json(); }).then(function (d) {
+      data = d;
+      $("city").innerHTML = (d.cities || []).map(function (c) { return '<option value="' + c.id + '">' + c.ar + "</option>"; }).join("");
+      return loadState();
+    }).then(function () {
+      return fetch("/api/apps").then(function (r) { return r.json(); }).then(function (a) {
+        var titles = {}, seen = {}; apps = [];
+        (data.baseApps || []).forEach(function (b) { titles[b.id] = b.title; });
+        (a.apps || []).forEach(function (x) { if (!seen[x.id]) { seen[x.id] = 1; apps.push({ id: x.id, title: titles[x.id] || x.title }); } });
+        renderApps();
+      });
+    }).then(refreshVolume);
+  }
+  if (!PIN) showLogin();
+  else fetch("/api/check?pin=" + encodeURIComponent(PIN)).then(function (r) { if (r.ok) loadAll(); else showLogin(); }).catch(function () { loadAll(); });
+  setInterval(function () { if (!document.hidden && PIN) loadState(); }, 12000);
+  setInterval(renderHeader, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && PIN) { loadState(); refreshVolume(); } });
+})();
+</script>
+</body>
+</html>

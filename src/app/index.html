@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>المجلس</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-gold" dir="rtl">
+  <div id="bgA" class="bg"></div>
+  <div id="bgB" class="bg"></div>
+  <div id="scrim" class="scrim"></div>
+
+  <!-- Frames (one is shown, chosen in settings) -->
+  <svg class="frame-screen" viewBox="0 0 1920 1080" aria-hidden="true">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" style="stop-color:var(--gold-dark)"/><stop offset=".5" style="stop-color:var(--gold-light)"/><stop offset="1" style="stop-color:var(--gold-dark)"/>
+      </linearGradient>
+      <g id="corner" fill="none" stroke="url(#g)">
+        <path d="M0 150 V44 Q0 0 44 0 H150" stroke-width="3"/>
+        <path d="M14 120 V54 Q14 14 54 14 H120" stroke-width="1.2" opacity=".8"/>
+        <path d="M24 24 l16 -16 l16 16 l-16 16 z" fill="url(#g)" stroke="none"/>
+      </g>
+      <pattern id="najdiTop" width="56" height="26" patternUnits="userSpaceOnUse">
+        <path d="M6 26 V18 H12 V10 H18 V2 H38 V10 H44 V18 H50 V26 Z" fill="url(#g)" opacity=".85"/>
+      </pattern>
+      <g id="lattice" fill="none" stroke="url(#g)" stroke-width="1.6">
+        <rect x="0" y="0" width="150" height="150"/>
+        <path d="M75 12 L92 58 L138 75 L92 92 L75 138 L58 92 L12 75 L58 58 Z"/>
+        <rect x="38" y="38" width="74" height="74" transform="rotate(45 75 75)"/>
+        <circle cx="75" cy="75" r="14"/>
+      </g>
+    </defs>
+    <g class="fr fr-palace">
+      <rect x="22" y="22" width="1876" height="1036" rx="6" fill="none" stroke="url(#g)" stroke-width="1.5" opacity=".7"/>
+      <use href="#corner" transform="translate(22 22)"/>
+      <use href="#corner" transform="translate(1898 22) scale(-1 1)"/>
+      <use href="#corner" transform="translate(22 1058) scale(1 -1)"/>
+      <use href="#corner" transform="translate(1898 1058) scale(-1 -1)"/>
+    </g>
+    <g class="fr fr-najdi">
+      <rect x="22" y="22" width="1876" height="1036" fill="none" stroke="url(#g)" stroke-width="1.5" opacity=".8"/>
+      <rect x="34" y="34" width="1852" height="1012" fill="none" stroke="url(#g)" stroke-width=".8" opacity=".45"/>
+      <rect x="40" y="0" width="1840" height="22" fill="url(#najdiTop)" transform="translate(0 0)"/>
+      <rect x="40" y="1058" width="1840" height="22" fill="url(#najdiTop)" transform="rotate(180 960 1069)"/>
+    </g>
+    <g class="fr fr-mashrabiya">
+      <rect x="22" y="22" width="1876" height="1036" fill="none" stroke="url(#g)" stroke-width="1.5" opacity=".75"/>
+      <rect x="32" y="32" width="1856" height="1016" fill="none" stroke="url(#g)" stroke-width=".8" opacity=".45"/>
+      <use href="#lattice" transform="translate(22 22) scale(.56)" opacity=".7"/>
+      <use href="#lattice" transform="translate(1814 22) scale(.56)" opacity=".7"/>
+      <use href="#lattice" transform="translate(22 974) scale(.56)" opacity=".7"/>
+      <use href="#lattice" transform="translate(1814 974) scale(.56)" opacity=".7"/>
+    </g>
+    <g class="fr fr-arch" fill="none" stroke="url(#g)">
+      <path d="M26 1054 V40 H820 C880 40 920 30 960 6 C1000 30 1040 40 1100 40 H1894 V1054 Z" stroke-width="2" opacity=".8"/>
+      <path d="M38 1042 V52 H826 C884 52 924 42 960 20 C996 42 1036 52 1094 52 H1882 V1042 Z" stroke-width=".9" opacity=".45"/>
+      <path d="M26 1054 H1894" stroke-width="2" opacity=".8"/>
+    </g>
+    <g class="fr fr-minimal">
+      <rect x="30" y="30" width="1860" height="1020" rx="14" fill="none" stroke="url(#g)" stroke-width="1.2" opacity=".6"/>
+    </g>
+  </svg>
+
+  <header class="top">
+    <div class="title">
+      <div class="title-ar" id="majlisName">المجلس</div>
+      <div class="title-en" id="majlisNameEn">MAJLIS</div>
+    </div>
+    <div class="infobar">
+      <div id="weather" class="ib-item weather hidden"><span id="wIcon" class="w-icon"></span><span id="wTemp" class="w-temp"></span><span class="w-text"><span id="wDesc"></span><span id="wRange" class="w-range"></span></span></div>
+      <div id="occasions" class="occasions"></div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="clock-block">
+      <div class="time"><span id="hm">--:--</span><span id="ampm" class="ampm"></span></div>
+      <div class="day"><span id="dayAr"></span><span class="dot">◆</span><span id="dayEn" class="day-en"></span></div>
+      <div class="dates"><span id="hijri"></span><span class="sep">|</span><span id="greg" class="greg"></span></div>
+    </div>
+
+    <div class="prayers">
+      <div class="prayers-head">
+        <div class="prayers-title">مواقيت الصلاة <span id="pCity" class="p-city"></span></div>
+        <div class="next"><span class="next-label">القادمة</span> <span id="nextName" class="next-name"></span> <span class="next-label">بعد</span> <span id="nextIn" class="next-in"></span></div>
+      </div>
+      <div id="prayerList" class="prayer-list"></div>
+    </div>
+  </section>
+
+  <section class="welcome">
+    <div id="welcome" class="welcome-main">حيّاكم الله</div>
+    <div id="welcomeSub" class="welcome-sub"></div>
+    <div id="ayah" class="ayah"></div>
+  </section>
+
+  <nav id="actions" class="actions">
+    <div class="action" data-act="radio"><span class="a-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><span>إذاعة القرآن</span><span id="radioNow" class="radio-now"></span></div>
+    <div class="action" data-act="wifi"><span class="a-icon"><svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1.3" fill="currentColor"/></svg></span><span>واي فاي الضيوف</span></div>
+    <div class="action" data-act="ambient"><span class="a-icon"><svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg></span><span>وضع الهدوء</span></div>
+    <div class="action" data-act="bg"><span class="a-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.6"/></svg></span><span>الخلفية</span></div>
+    <div class="action" data-act="settings"><span class="a-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></span><span>الإعدادات</span></div>
+  </nav>
+
+  <main id="rows" class="rows"></main>
+
+  <!-- Overlays -->
+  <div id="wifi" class="overlay">
+    <div class="panel wifi-panel">
+      <div class="panel-title">واي فاي الضيوف <span class="en">Guest Wi-Fi</span></div>
+      <div class="wifi-body">
+        <div id="wifiQr" class="qr"></div>
+        <div class="wifi-info">
+          <div class="wifi-hint">امسح الرمز بكاميرا الجوال للاتصال مباشرة</div>
+          <div class="wifi-hint en">Scan with your phone camera to join</div>
+          <div class="wifi-label">اسم الشبكة · Network</div>
+          <div id="wifiSsid" class="wifi-value"></div>
+          <div class="wifi-label">كلمة المرور · Password</div>
+          <div id="wifiPass" class="wifi-value pass"></div>
+        </div>
+      </div>
+      <div class="panel-foot">رجوع للإغلاق · BACK to close</div>
+    </div>
+  </div>
+
+  <div id="radio" class="overlay">
+    <div class="panel radio-panel">
+      <div class="panel-title">إذاعة القرآن الكريم <span class="en">Quran Radio</span></div>
+      <div id="stations" class="stations"></div>
+      <div class="panel-foot">موافق للتشغيل · مرة ثانية للإيقاف · رجوع للإغلاق</div>
+    </div>
+  </div>
+
+  <div id="settings" class="overlay">
+    <div class="panel set-panel">
+      <div class="panel-title">الإعدادات <span class="en">Settings</span></div>
+      <div class="set-viewport"><div id="settingsList" class="set-list"></div></div>
+      <div class="panel-foot">رجوع للإغلاق · BACK to close</div>
+    </div>
+  </div>
+
+  <div id="ambient" class="ambient">
+    <div id="ambA" class="amb-img"></div>
+    <div id="ambB" class="amb-img"></div>
+    <div class="amb-shade"></div>
+    <div class="amb-top">
+      <div id="ambWelcome" class="amb-welcome"></div>
+      <div id="ambAyah" class="amb-ayah"></div>
+    </div>
+    <div id="ambForecast" class="amb-forecast"></div>
+    <div class="amb-bottom">
+      <div class="amb-clock"><div id="ambTime" class="amb-time"></div><div id="ambDate" class="amb-date"></div></div>
+      <div class="amb-next"><div class="amb-next-label">الصلاة القادمة</div><div id="ambNext" class="amb-next-val"></div><div id="ambNextIn" class="amb-next-in"></div></div>
+    </div>
+  </div>
+
+  <div id="prayerAlert" class="prayer-alert">
+    <div class="pa-inner">
+      <div class="pa-small">حان الآن موعد</div>
+      <div id="paName" class="pa-name"></div>
+      <div id="paTime" class="pa-time"></div>
+      <div class="pa-verse">إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا</div>
+    </div>
+  </div>
+
+  <div id="msgCard" class="msg-card">
+    <div class="mc-inner">
+      <div class="mc-orn"><span></span><i></i><span></span></div>
+      <div id="mcText" class="mc-text"></div>
+      <div id="mcSub" class="mc-sub"></div>
+      <div class="mc-orn"><span></span><i></i><span></span></div>
+      <div class="mc-hint">اضغط أي زر للإغلاق</div>
+    </div>
+  </div>
+
+  <div id="sleepWarn" class="prayer-alert sleep-warn">
+    <div class="pa-inner">
+      <div class="pa-small">لا يوجد استخدام منذ فترة</div>
+      <div id="sleepCount" class="pa-name num">60</div>
+      <div class="pa-time">سيتم إطفاء التلفاز · اضغط أي زر للإلغاء</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Silent looping video: LG does not start its screensaver while a video plays. -->
+  <video id="keepawake" class="keepawake" src="keepawake.mp4" muted loop playsinline autoplay></video>
+  <audio id="radioAudio" preload="none"></audio>
+  <audio id="adhanAudio" preload="none"></audio>
+
+  <script src="lib/adhan.js"></script>
+  <script src="lib/qrcode.js"></script>
+  <script src="data.js"></script>
+  <script src="apps-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

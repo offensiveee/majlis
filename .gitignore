@@ -1,0 +1,5 @@
+# Per-TV keys, PINs and tokens created by "npm run setup". Never commit these.
+.majlis/
+build/
+node_modules/
+.DS_Store

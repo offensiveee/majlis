@@ -1,0 +1,24 @@
+<!doctype html><link rel="stylesheet" href="_base.css"><svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <radialGradient id="vel" cx="50%" cy="40%" r="80%"><stop offset="0" stop-color="#6a3d1e"/><stop offset=".6" stop-color="#3a2010"/><stop offset="1" stop-color="#170c05"/></radialGradient>
+ <pattern id="ogee" width="200" height="260" patternUnits="userSpaceOnUse">
+  <g fill="none" stroke="#e2bd78" stroke-width="2.2">
+   <path d="M100 0 C160 40 160 90 100 130 C40 170 40 220 100 260"/>
+   <path d="M100 0 C40 40 40 90 100 130 C160 170 160 220 100 260"/>
+   <path d="M0 130 C60 90 60 40 0 0 M200 130 C140 90 140 40 200 0 M0 130 C60 170 60 220 0 260 M200 130 C140 170 140 220 200 260"/>
+  </g>
+  <g fill="#e2bd78">
+   <path d="M100 100 C112 112 112 148 100 160 C88 148 88 112 100 100 Z"/>
+   <path d="M70 130 C82 118 118 118 130 130 C118 142 82 142 70 130 Z" opacity=".75"/>
+   <circle cx="100" cy="130" r="5" fill="#3a2010"/>
+   <circle cx="0" cy="0" r="10"/><circle cx="200" cy="0" r="10"/><circle cx="0" cy="260" r="10"/><circle cx="200" cy="260" r="10"/>
+  </g>
+ </pattern>
+ <filter id="tex"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="2"/><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .08 0"/></filter>
+ <radialGradient id="vig" cx="50%" cy="45%" r="75%"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#vel)"/>
+<rect width="1920" height="1080" fill="url(#ogee)" opacity=".22"/>
+<rect width="1920" height="1080" filter="url(#tex)"/>
+<rect width="1920" height="1080" fill="url(#vig)"/>
+</svg>

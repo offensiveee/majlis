@@ -1,0 +1,23 @@
+<!doctype html><link rel="stylesheet" href="_base.css"><svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <filter id="grain" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.0018 0.045" numOctaves="5" seed="7" result="n"/>
+  <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.6 0 0 0 -0.35" result="a"/>
+  <feComponentTransfer in="n" result="b"><feFuncR type="table" tableValues="0 .6 .2 .9 .3 1 .4 .8"/></feComponentTransfer>
+  <feColorMatrix in="b" type="matrix" values=".36 0 0 0 .13  .19 0 0 0 .062  .075 0 0 0 .022  0 0 0 0 1"/>
+ </filter>
+ <radialGradient id="light" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#ffb860" stop-opacity=".16"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
+</defs>
+<rect width="1920" height="1080" filter="url(#grain)"/>
+<g opacity=".06">
+ <rect y="0" width="1920" height="180" fill="#fff"/><rect y="360" width="1920" height="180" fill="#000"/><rect y="720" width="1920" height="180" fill="#fff"/>
+</g>
+<g stroke="#0d0703" stroke-width="3" opacity=".85">
+ <line x1="0" y1="180" x2="1920" y2="180"/><line x1="0" y1="360" x2="1920" y2="360"/><line x1="0" y1="540" x2="1920" y2="540"/><line x1="0" y1="720" x2="1920" y2="720"/><line x1="0" y1="900" x2="1920" y2="900"/>
+ <line x1="640" y1="0" x2="640" y2="180"/><line x1="1400" y1="180" x2="1400" y2="360"/><line x1="380" y1="360" x2="380" y2="540"/><line x1="1100" y1="540" x2="1100" y2="720"/><line x1="1700" y1="720" x2="1700" y2="900"/><line x1="820" y1="900" x2="820" y2="1080"/>
+</g>
+<g stroke="#e8b878" stroke-width="1" opacity=".18">
+ <line x1="0" y1="182" x2="1920" y2="182"/><line x1="0" y1="362" x2="1920" y2="362"/><line x1="0" y1="542" x2="1920" y2="542"/><line x1="0" y1="722" x2="1920" y2="722"/><line x1="0" y1="902" x2="1920" y2="902"/>
+</g>
+<rect width="1920" height="1080" fill="url(#light)"/>
+</svg>

@@ -1,0 +1,19 @@
+<!doctype html><link rel="stylesheet" href="_base.css"><svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <filter id="cloud" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.0014 0.0022" numOctaves="4" seed="21"/>
+  <feColorMatrix type="matrix" values="0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .20  1.8 0 0 0 -.75"/>
+ </filter>
+ <filter id="veins" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="turbulence" baseFrequency="0.0012 0.0024" numOctaves="3" seed="8"/>
+  <feColorMatrix type="matrix" values="0 0 0 0 .80  0 0 0 0 .60  0 0 0 0 .28  -14 0 0 0 1.2"/>
+  <feGaussianBlur stdDeviation=".6"/>
+ </filter>
+ <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe0c4"/><stop offset=".5" stop-color="#e3cda6"/><stop offset="1" stop-color="#cfb187"/></linearGradient>
+ <radialGradient id="vig" cx="50%" cy="45%" r="75%"><stop offset=".45" stop-color="#3a2410" stop-opacity="0"/><stop offset="1" stop-color="#2a180a" stop-opacity=".6"/></radialGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#base)"/>
+<rect width="1920" height="1080" filter="url(#cloud)" opacity=".55"/>
+<rect width="1920" height="1080" filter="url(#veins)" opacity=".9"/>
+<rect width="1920" height="1080" fill="url(#vig)"/>
+</svg>

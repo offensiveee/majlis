@@ -1,0 +1,26 @@
+<!doctype html><link rel="stylesheet" href="_base.css"><svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e7c8"/><stop offset=".55" stop-color="#e2bf86"/><stop offset="1" stop-color="#a8733a"/></linearGradient>
+ <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2c16"/><stop offset="1" stop-color="#24140a"/></linearGradient>
+ <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#8f6a2f"/><stop offset=".5" stop-color="#f1d595"/><stop offset="1" stop-color="#8f6a2f"/></linearGradient>
+ <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4321"/><stop offset="1" stop-color="#1e1108"/></linearGradient>
+ <path id="arch" d="M0 1000 V420 C0 300 60 220 150 170 L170 150 L190 170 C280 220 340 300 340 420 V1000 Z"/>
+ <mask id="holes"><rect width="1920" height="1080" fill="#fff"/>
+  <g fill="#000"><use href="#arch" x="40"/><use href="#arch" x="420"/><use href="#arch" x="790"/><use href="#arch" x="1160"/><use href="#arch" x="1540"/></g>
+ </mask>
+ <radialGradient id="vig" cx="50%" cy="45%" r="75%"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".65"/></radialGradient>
+ <pattern id="tile" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M30 4 L56 30 L30 56 L4 30 Z" fill="none" stroke="#d9b06a" stroke-width="1.2" opacity=".35"/></pattern>
+</defs>
+<rect width="1920" height="1080" fill="url(#sky)"/>
+<g opacity=".25" fill="#fff8e6"><circle cx="960" cy="380" r="260"/></g>
+<rect y="860" width="1920" height="220" fill="url(#floor)"/>
+<rect y="860" width="1920" height="220" fill="url(#tile)"/>
+<rect width="1920" height="1080" fill="url(#wall)" mask="url(#holes)"/>
+<g fill="none" stroke="url(#gold)" stroke-width="5"><use href="#arch" x="40"/><use href="#arch" x="420"/><use href="#arch" x="790"/><use href="#arch" x="1160"/><use href="#arch" x="1540"/></g>
+<g fill="none" stroke="#d8b46e" stroke-width="1.5" opacity=".55"><use href="#arch" x="40" transform="translate(0 0)"/></g>
+<g fill="url(#gold)">
+ <rect x="0" y="1000" width="1920" height="10"/><rect x="0" y="60" width="1920" height="6"/>
+</g>
+<g fill="#d8b46e" opacity=".8"><circle cx="210" cy="120" r="8"/><circle cx="590" cy="120" r="8"/><circle cx="960" cy="120" r="8"/><circle cx="1330" cy="120" r="8"/><circle cx="1710" cy="120" r="8"/></g>
+<rect width="1920" height="1080" fill="url(#vig)"/>
+</svg>
