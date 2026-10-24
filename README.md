@@ -6,7 +6,7 @@
 
 <p align="center">
   A new interface for your TV, shaped around what you need.<br>
-  Prayer times, Quran radio, Hijri dates and a phone remote.
+  Prayer times, Quran radio, Hijri dates and a phone remote, on LG, Android TV, Google TV, Fire TV and Samsung.
 </p>
 
 <p align="center">
