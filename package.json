@@ -5,13 +5,17 @@
   "license": "MIT",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "deploy": "node scripts/deploy.mjs",
     "remove": "node scripts/deploy.mjs --remove",
     "preview": "node scripts/preview.mjs",
-    "art": "node scripts/art/render.mjs"
+    "art": "node scripts/art/render.mjs",
+    "samsung": "node scripts/build-samsung.mjs",
+    "android": "node scripts/build-android.mjs"
   },
   "devDependencies": {
     "@webos-tools/cli": "^3.2.0",

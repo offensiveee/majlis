@@ -24,5 +24,7 @@ The backgrounds and the icon were drawn for this project (sources in `scripts/ar
 | [mp3quran.net](https://mp3quran.net) | Quran radio streams | Streams are played from their servers |
 | [IslamCan](https://www.islamcan.com/audio/adhan/) | Optional adhan recordings | Played from their site when chosen |
 | LG webOS CLI ([@webos-tools/cli](https://github.com/webos-tools/cli)) | Installing on the TV | Apache 2.0 (dev dependency) |
+| [AndroidX Core and WebKit](https://developer.android.com/jetpack/androidx) | The Android TV app (Gradle dependencies) | Apache 2.0 |
+| [Tizen Studio](https://developer.tizen.org) | Signing and installing on Samsung | Samsung's SDK terms (installed by you) |
 
 LG, webOS, Samsung and the names and logos of streaming apps are trademarks of their owners. App icons are read from your own TV at runtime and aren't included in this repository.

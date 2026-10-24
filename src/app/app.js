@@ -29,6 +29,7 @@
     accent: "", frame: "palace"
   };
 
+  if (window.MAJLIS_CONFIG) for (var ck in window.MAJLIS_CONFIG) DEFAULTS[ck] = window.MAJLIS_CONFIG[ck];
   var $ = function (id) { return document.getElementById(id); };
   var prefs = loadLocalPrefs();
   var serviceUp = false, status = {}, rev = -1;
@@ -79,24 +80,10 @@
   }
   function ampm(d) { return d.getHours() < 12 ? "ص" : "م"; }
 
-  // ---------- Luna bus ----------
-  var bridges = [];
-  function luna(uri, params, cb) {
-    if (typeof window.PalmServiceBridge === "undefined") { if (cb) cb(null); return; }
-    var b = new window.PalmServiceBridge();
-    bridges.push(b);
-    b.onservicecallback = function (msg) {
-      bridges.splice(bridges.indexOf(b), 1);
-      var r = null; try { r = JSON.parse(msg); } catch (e) {}
-      if (cb) cb(r);
-    };
-    b.call(uri, JSON.stringify(params || {}));
-  }
-  function launch(item) {
-    luna("luna://com.webos.applicationManager/launch", { id: item.id }, function (r) {
-      if (r && r.returnValue === false) toast("تعذر فتح " + item.title);
-    });
-  }
+  // ---------- System (LG, Android, Samsung): see platform.js ----------
+  var Platform = window.Platform;
+  var luna = Platform.luna;
+  function launch(item) { Platform.launch(item, function () { toast("تعذر فتح " + item.title); }); }
 
   var toastTimer;
   function toast(msg) {
@@ -109,6 +96,7 @@
 
   // ---------- Keep the screen on ----------
   function keepVideoPlaying() {
+    Platform.keepAwake();
     var v = $("keepawake");
     v.muted = true;
     var p = v.play();
@@ -235,8 +223,22 @@
       html += '<div class="p-row ' + p.key + '" data-i="' + i + '"><span class="p-name">' + p.ar + '</span><span class="p-time">' + time12(p.time) + " <small>" + ampm(p.time) + "</small></span></div>";
     });
     $("prayerList").innerHTML = html;
+    sendPrayerPlan();
     lastNextKey = "";
     prayerTick(new Date());
+  }
+  // The Android helper can't calculate prayer times itself, so the screen sends it the week ahead.
+  function sendPrayerPlan() {
+    if (Platform.id !== "android" || !serviceUp) return;
+    var list = [], now = Date.now();
+    for (var d = 0; d < 7; d++) {
+      var day = new Date(now + d * 86400000);
+      timesFor(day).forEach(function (p) {
+        if (!p.alert || p.time.getTime() < now) return;
+        list.push({ key: p.key, name: p.key === "dhuhr" && prefs.friday && day.getDay() === 5 ? "الجمعة" : p.ar, at: p.time.getTime() });
+      });
+    }
+    post("/api/prayers", { list: list });
   }
   function nextPrayer(now) {
     for (var i = 0; i < prayerTimes.length; i++) {
@@ -464,7 +466,7 @@
   // ---------- Apps ----------
   var BASE = window.HOME_APPS || [], BASE_RANK = {};
   BASE.forEach(function (a, i) { BASE_RANK[a.id] = i; });
-  var allApps = [], inputs = (window.HOME_INPUTS || []).slice(), serviceApps = null;
+  var allApps = [], inputs = window.Platform.inputs((window.HOME_INPUTS || []).slice()), serviceApps = null;
   function mergeApps() {
     var byId = {};
     BASE.forEach(function (a) { byId[a.id] = { id: a.id, title: a.title, icon: a.icon, bg: a.bg }; });
@@ -539,7 +541,7 @@
     var actionEls = Array.prototype.slice.call(document.querySelectorAll(".action"));
     rows = [{ items: actionEls.map(function (el) { return { el: el, act: el.getAttribute("data-act") }; }) }];
     buildRow("apps", visibleApps(), false);
-    buildRow("inputs", inputs, true);
+    if (inputs.length) buildRow("inputs", inputs, true);
     setFocus(keep.r, keep.c);
   }
   function setFocus(r, c) {
@@ -604,7 +606,9 @@
     var w = prefs.wifi || {};
     var body = $("wifi").querySelector(".wifi-body");
     if (!w.ssid) {
-      body.innerHTML = '<div class="wifi-empty">لم تتم إضافة شبكة بعد.<br>أضفها من لوحة التحكم في الجوال:<br><span class="set-big">' + esc(phoneUrl()) + "</span></div>";
+      body.innerHTML = Platform.hasHelper
+        ? '<div class="wifi-empty">لم تتم إضافة شبكة بعد.<br>أضفها من لوحة التحكم في الجوال:<br><span class="set-big">' + esc(phoneUrl()) + "</span></div>"
+        : '<div class="wifi-empty">لم تتم إضافة شبكة بعد.<br>أضفها في ملف majlis.config.json قبل التركيب.</div>';
       return;
     }
     if (!$("wifiQr")) {
@@ -688,8 +692,8 @@
       });
     }
 
-    head("لوحة التحكم من الجوال");
-    row("info", '<div class="set-main">افتح الرابط من جوالك (على نفس الشبكة) للتحكم بكل شيء: الريموت، الصور، الترحيب، الواي فاي، المناسبات<div class="set-big">' + esc(phoneUrl()) + '</div></div><div class="set-val">الرمز<div class="set-big">' + esc(status.pin || "—") + "</div></div>", null);
+    if (Platform.hasHelper) head("لوحة التحكم من الجوال");
+    if (Platform.hasHelper) row("info", '<div class="set-main">افتح الرابط من جوالك (على نفس الشبكة) للتحكم بكل شيء: الريموت، الصور، الترحيب، الواي فاي، المناسبات<div class="set-big">' + esc(phoneUrl()) + '</div></div><div class="set-val">الرمز<div class="set-big">' + esc(status.pin || "—") + "</div></div>", null);
 
     head("عام");
     chooser("الثيم", "ألوان الشاشة", (THEMES.filter(function (t) { return t.id === prefs.theme; })[0] || THEMES[0]).ar, function (s) {
@@ -701,8 +705,8 @@
     chooser("تغيير الخلفية تلقائياً", "", prefs.rotate ? "كل " + arDigits(prefs.rotate) + " دقيقة" : "متوقف", function (s) {
       prefs.rotate = cycle(SLIDESHOW, prefs.rotate, s); lastSlide = Date.now(); savePrefs(["rotate"]);
     });
-    toggle("زر الرئيسية يفتح هذه الشاشة", "بدل شاشة LG", "takeover");
-    chooser("إطفاء تلقائي لحفظ الطاقة", "إذا ما فيه استخدام، مع تنبيه قبلها بدقيقة", sleepLabel(prefs.sleepMin), function (s) {
+    if (Platform.id === "webos") toggle("زر الرئيسية يفتح هذه الشاشة", "بدل شاشة LG", "takeover");
+    if (Platform.id === "webos") chooser("إطفاء تلقائي لحفظ الطاقة", "إذا ما فيه استخدام، مع تنبيه قبلها بدقيقة", sleepLabel(prefs.sleepMin), function (s) {
       prefs.sleepMin = cycle(SLEEP, prefs.sleepMin, s); savePrefs(["sleepMin"]);
     });
 
@@ -720,8 +724,8 @@
     });
     toggle("تنبيه وقت الصلاة على هذه الشاشة", "", "alertOverlay");
     toggle("صوت التنبيه", "نغمة هادئة", "chime");
-    toggle("إشعار على التلفاز أثناء مشاهدة أي تطبيق", "يظهر فوق نتفليكس ويوتيوب وغيرها", "tvToast");
-    chooser("وقت الأذان أثناء مشاهدة تطبيق", "يرجع الوضع بعد الأذان", (ADHAN_ACTIONS.filter(function (a) { return a.id === prefs.adhanAction; })[0] || ADHAN_ACTIONS[0]).ar, function (s) {
+    if (Platform.hasHelper) toggle("إشعار على التلفاز أثناء مشاهدة أي تطبيق", "يظهر فوق نتفليكس ويوتيوب وغيرها", "tvToast");
+    if (Platform.hasHelper) chooser("وقت الأذان أثناء مشاهدة تطبيق", "يرجع الوضع بعد الأذان", (ADHAN_ACTIONS.filter(function (a) { return a.id === prefs.adhanAction; })[0] || ADHAN_ACTIONS[0]).ar, function (s) {
       prefs.adhanAction = cycle(ADHAN_ACTIONS.map(function (a) { return a.id; }), prefs.adhanAction || "off", s); savePrefs(["adhanAction"]);
     });
     chooser("صوت الأذان", "بدل النغمة الهادئة", (ADHANS.filter(function (a) { return a.id === prefs.adhanSound; })[0] || { ar: "بدون" }).ar, function (s) {
@@ -729,7 +733,7 @@
     });
     toggle("وضع الجمعة", "تذكير بسورة الكهف وتسمية صلاة الجمعة", "friday", function () { computePrayers(); renderOccasions(); });
     toggle("إذاعة القرآن صباح الجمعة", "تشتغل تلقائياً على شاشة المجلس", "fridayRadio");
-    chooser("تذكير قبل الأذان", "إشعار قبل موعد الصلاة", prefs.remind ? arDigits(prefs.remind) + " دقائق" : "متوقف", function (s) {
+    if (Platform.hasHelper) chooser("تذكير قبل الأذان", "إشعار قبل موعد الصلاة", prefs.remind ? arDigits(prefs.remind) + " دقائق" : "متوقف", function (s) {
       prefs.remind = cycle(REMIND, prefs.remind, s); savePrefs(["remind"]);
     });
 
@@ -884,22 +888,16 @@
     get("/api/activity", function () {});
   }
 
-  // Live events from the helper: phone changes, sleep countdown.
-  var eventsBridge = null;
+  // Live events from the helper: phone changes, prayer, messages, sleep countdown.
   function subscribeEvents() {
-    if (typeof window.PalmServiceBridge === "undefined" || eventsBridge) return;
-    eventsBridge = new window.PalmServiceBridge();
-    eventsBridge.onservicecallback = function (msg) {
-      var e = {}; try { e = JSON.parse(msg); } catch (err) {}
-      if (e.returnValue === false) { eventsBridge = null; setTimeout(subscribeEvents, 5000); return; }
+    Platform.subscribe(function (e) {
       if (e.sleep && e.sleep.warning) showSleepWarning(e.sleep.until);
       if (e.event === "state") loadState(false);
       else if (e.event === "message") showMessageCard(e.message);
       else if (e.event === "prayer" && e.alert) maybeShowStatus({ alertNow: e.alert });
       else if (e.event === "sleepWarn") showSleepWarning(e.until);
       else if (e.event === "sleepCancel") hideSleepWarning();
-    };
-    eventsBridge.call("luna://" + APP_ID + ".service/events", JSON.stringify({ subscribe: true }));
+    });
   }
 
   // ---------- Keys ----------
@@ -917,7 +915,7 @@
     if (k === 405) { if (radioPlaying) stopRadio(); else if (stationIndex(prefs.radio) >= 0) playStation(STATIONS[stationIndex(prefs.radio)]); else openOverlay("radio"); return; } // yellow
     if (k === 406) { if (openId === "wifi") closeOverlay(); else { closeOverlay(); openOverlay("wifi"); } return; } // blue
     if (openId) {
-      if (k === 461 || k === 8 || k === 27) { closeOverlay(); return; }
+      if (Platform.backKeys.indexOf(k) !== -1) { closeOverlay(); return; }
       if (openId === "radio") radioKey(k);
       else if (openId === "settings") settingsKey(k);
       else if (k === 13) closeOverlay();
@@ -933,16 +931,18 @@
 
   // ---------- Helper service ----------
   function startService(tries) {
-    luna("luna://" + APP_ID + ".service/start", {}, function () {});
+    if (!Platform.hasHelper) { localApps(); return; }
+    Platform.startHelper();
     get("/api/state", function (s) {
       if (!s) { if (tries < 30) setTimeout(function () { startService(tries + 1); }, 1500); return; }
-      if (s.status && s.status.version !== SERVICE_VERSION && tries < 30) {
-        luna("luna://" + APP_ID + ".service/quit", {}, function () {});
+      if (Platform.checksHelperVersion && s.status && s.status.version !== SERVICE_VERSION && tries < 30) {
+        Platform.restartHelper();
         setTimeout(function () { startService(tries + 1); }, 2500);
         return;
       }
       serviceUp = true;
       applyState(s, true);
+      sendPrayerPlan();
       syncRamadanDays();
       subscribeEvents();
       maybeShowStatus(s.status);
@@ -967,6 +967,15 @@
     showBackground(visibleBg(Math.min(prefs.bg, backgrounds.length - 1), 1));
     if (openId === "wifi") buildWifi();
     if (!openId) { mergeApps(); render(); }
+  }
+  // Without a helper (Samsung), apps come from the system and settings stay on the TV.
+  function localApps() {
+    Platform.listApps(function (list) {
+      if (!list) return;
+      serviceApps = list;
+      mergeApps();
+      if (!openId) render();
+    });
   }
   function loadState(force) { get("/api/state", function (s) { if (s) applyState(s, force); }); }
   function refreshApps() {

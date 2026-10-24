@@ -12,6 +12,7 @@
 <p align="center">
   <a href="README.ar.md">العربية</a> ·
   <a href="docs/en/install.md">Install</a> ·
+  <a href="docs/en/ai-help.md">AI help</a> ·
   <a href="docs/en/features.md">Features</a> ·
   <a href="docs/en/phone.md">Phone app</a> ·
   <a href="docs/en/how-it-works.md">How it works</a> ·
@@ -66,17 +67,24 @@ It runs on the TV itself. Once it's installed you don't need a computer, a cloud
 
 ## Supported TVs
 
-| TV | Status |
-|---|---|
-| LG webOS 6 and newer (2021 →) | Supported. Tested on webOS 6 (NANO90, 2021) and webOS 25 (QNED91, 2025) |
-| LG webOS 4–5 (2018–2020) | Should work; not tested yet |
-| Samsung (Tizen), Android TV / Google TV, Fire TV | Not supported yet. See [other TVs](docs/en/other-tvs.md) |
+| TV | What you need | Status | Guide |
+|---|---|---|---|
+| **LG** webOS 6+ (2021 →) | Free LG developer account, a computer with Node.js | Full version. Tested on webOS 6 and webOS 25 | [Install on LG](docs/en/install-lg.md) |
+| **Android TV / Google TV / Fire TV** (Sony, TCL, Hisense, Philips, Xiaomi, Chromecast, Fire TV stick…) | Just the TV | Full version except TV power control. Built and published automatically | [Install on Android](docs/en/install-android.md) |
+| **Samsung** Tizen (2017 →) | Samsung account, a computer with Tizen Studio | The screen, without the phone app | [Install on Samsung](docs/en/install-samsung.md) |
+| **Any TV with HDMI** | A Google TV or Fire TV stick | Same as Android | [Install on Android](docs/en/install-android.md) |
 
-No rooting or jailbreaking. Majlis uses LG's official Developer Mode.
+No rooting or jailbreaking: Majlis uses each brand's official developer options. The [comparison](docs/en/install.md) shows exactly what each version can do.
 
 ## Quick start
 
-You need a computer on the same network as the TV, [Node.js 18+](https://nodejs.org) and about ten minutes.
+**Android TV / Google TV / Fire TV**: install the free *Downloader* app, then enter
+
+```text
+https://github.com/offensiveee/majlis/releases/latest/download/majlis-android.apk
+```
+
+**LG**: with a computer on the same network and [Node.js 18+](https://nodejs.org):
 
 ```bash
 git clone https://github.com/offensiveee/majlis.git
@@ -86,9 +94,11 @@ npm run setup -- --name majlis --ip 192.168.1.40
 npm run deploy -- --name majlis
 ```
 
-Then open `http://<tv-ip>:8090` on your phone and enter the PIN shown in Majlis settings.
+**Samsung**: see the [Samsung guide](docs/en/install-samsung.md).
 
-The [install guide](docs/en/install.md) walks through every step, including turning on Developer Mode on the TV.
+Then open `http://<tv-ip>:8090` on your phone and enter the PIN shown in Majlis settings (LG and Android).
+
+Prefer to be guided? Copy a ready-made prompt from [AI help](docs/en/ai-help.md) into ChatGPT, Claude or Gemini.
 
 ## Privacy
 

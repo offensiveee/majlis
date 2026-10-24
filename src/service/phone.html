@@ -347,8 +347,8 @@
     <div class="ttl">التلفاز</div>
     <div class="card">
       <div class="sw"><div class="t">زر الرئيسية يفتح شاشة المجلس<small>بدل شاشة LG</small></div><label class="tog"><input type="checkbox" data-pref="takeover"><i></i></label></div>
-      <label class="f">إطفاء تلقائي لحفظ الطاقة</label>
-      <div class="seg" data-seg="sleepMin" data-num="1"><button data-v="0">متوقف</button><button data-v="15">١٥ د</button><button data-v="30">٣٠ د</button><button data-v="60">ساعة</button><button data-v="240">٤ ساعات</button></div>
+      <div id="sleepBox"><label class="f">إطفاء تلقائي لحفظ الطاقة</label>
+      <div class="seg" data-seg="sleepMin" data-num="1"><button data-v="0">متوقف</button><button data-v="15">١٥ د</button><button data-v="30">٣٠ د</button><button data-v="60">ساعة</button><button data-v="240">٤ ساعات</button></div></div>
     </div>
     <div class="ttl">التطبيقات على الشاشة</div>
     <div class="card"><div id="appList"></div></div>
@@ -692,7 +692,16 @@
     if (document.activeElement !== $("wpass")) $("wpass").value = w.pass || "";
     setSeg($("wtype"), w.type || "WPA");
     if ($("city").options.length) $("city").value = p.city;
-    renderLooks(); renderHeader();
+    renderLooks(); renderHeader(); applyCapabilities();
+  }
+  // Hide what this TV system can't do (for example, Android can't turn the TV off).
+  function applyCapabilities() {
+    var c = (state.status || {}).capabilities || {};
+    function show(sel, on) { qa(sel).forEach(function (el) { el.style.display = on === false ? "none" : ""; }); }
+    show('[data-act="power"]', c.power);
+    show('[data-b="HOME"]', c.lgMenu);
+    show("#sleepBox", c.sleep);
+    qa('[data-pref="takeover"]').forEach(function (el) { el.closest(".sw").style.display = c.power === false ? "none" : ""; });
   }
   function loadState() {
     return fetch("/api/state").then(function (r) { return r.json(); }).then(function (s) {

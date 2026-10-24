@@ -1,0 +1,8 @@
+{
+  "majlisName": "المجلس",
+  "majlisNameEn": "MAJLIS",
+  "welcome": "حيّاكم الله",
+  "welcomeSub": "أهلاً وسهلاً بضيوفنا الكرام",
+  "city": "riyadh",
+  "wifi": { "ssid": "", "pass": "", "type": "WPA" }
+}

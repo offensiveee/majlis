@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+        id="http://majlis.tv/samsung" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="MajlisTV01.Majlis" package="MajlisTV01" required_version="3.0"/>
+    <tizen:profile name="tv-samsung"/>
+    <content src="index.html"/>
+    <icon src="icon.png"/>
+    <name>مجلس</name>
+    <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+    <access origin="*" subdomains="true"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.info"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <tizen:privilege name="http://tizen.org/privilege/power"/>
+    <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable"
+                   encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

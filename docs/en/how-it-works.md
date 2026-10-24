@@ -45,6 +45,21 @@ Settings and photos are stored in the helper's folder on the TV (`data/`), so th
 - `preview.mjs` serves the screen on your computer for design work.
 - `art/` has the SVG sources of the backgrounds and the icon.
 
+## One screen, three systems
+
+The screen in `src/app` is the same everywhere. `src/app/platform.js` is the only file that knows which system it's on:
+
+| | LG webOS | Android TV / Google TV / Fire TV | Samsung Tizen |
+|---|---|---|---|
+| Screen | `src/app` in webOS's web engine | `src/app` in a full-screen WebView (`android/`, Kotlin) | `src/app` as a Tizen web app (`samsung/config.xml`) |
+| Helper | `src/service` (Node on the TV) | `HelperService.kt`: the same HTTP API on port 8090 | None: Samsung doesn't allow background services |
+| Opening apps | Luna `applicationManager/launch` | Android intents | `tizen.application.launch` |
+| Home button | Helper switches back from LG's launcher | Majlis is a real home app (`CATEGORY_HOME`) | Not possible |
+| Over other apps at adhan | SSAP notification, media pause or volume | Toast, audio focus or volume | — |
+| Settings | Helper, phone app | Helper, phone app | On the TV, plus `majlis.config.json` at build time |
+
+The phone app (`src/service/phone.html`) is the same on LG and Android, and hides what a system can't do (for example, turning the TV off on Android).
+
 ## Privacy
 
 - No accounts, analytics or Majlis servers. Nothing leaves your home network except:
