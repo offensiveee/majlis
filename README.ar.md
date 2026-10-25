@@ -1,6 +1,10 @@
 <div dir="rtl">
 
 <p align="center">
+  <em>اللهم اكتب أجر هذا العمل لكل من ساعد فيه وساهم، واجعله صدقةً جاريةً عن المسلمين أجمعين</em>
+</p>
+
+<p align="center">
   <img src="docs/images/icon.png" width="112" alt="أيقونة مجلس">
 </p>
 

@@ -1,4 +1,9 @@
 <p align="center">
+  <em>اللهم اكتب أجر هذا العمل لكل من ساعد فيه وساهم، واجعله صدقةً جاريةً عن المسلمين أجمعين</em><br>
+  <sub>May Allah reward everyone who helped and contributed to this work, and accept it as ongoing charity for all Muslims.</sub>
+</p>
+
+<p align="center">
   <img src="docs/images/icon.png" width="112" alt="Majlis icon">
 </p>
 
