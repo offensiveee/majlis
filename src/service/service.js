@@ -16,7 +16,7 @@ var urlLib = require("url");
 var os = require("os");
 var adhan = require("./adhan.js");
 
-var VERSION = "4";
+var VERSION = "5";
 var APP_ID = "com.majlis.tv";
 var PORT = 8090;
 var service = new Service(APP_ID + ".service");
@@ -126,7 +126,7 @@ function subscribe() {
     if (!st || st === power) return;
     power = st;
     note("power " + st);
-    if (st === "Active") activity("power on");
+    if (st === "Active") { activity("power on"); prayerLoop(); }
   }, true);
 }
 
@@ -159,8 +159,12 @@ function activity(why) {
   pushEvent({ event: "sleepCancel" });
   if (sleep.prevApp && sleep.prevApp !== APP_ID && LG_HOME.indexOf(sleep.prevApp) === -1) launch(sleep.prevApp);
 }
+// Watching an app, Live TV or an HDMI input never counts as idle: the timer only runs while
+// the Majlis screen or LG's launcher is showing and no one has pressed anything.
+function watching() { return foreground !== APP_ID && foreground !== "" && LG_HOME.indexOf(foreground) === -1; }
 setInterval(function () {
-  if (!prefs.sleepMin || sleep.warning || power !== "Active" || ssap.state !== "connected") return;
+  if (power !== "Active" || watching()) { lastActivity = Date.now(); return; }
+  if (!prefs.sleepMin || sleep.warning || ssap.state !== "connected") return;
   if (Date.now() - lastActivity < prefs.sleepMin * 60000) return;
   sleep.warning = true;
   sleep.until = Date.now() + 60000;
@@ -203,7 +207,7 @@ function pointerSend(button) {
 
 // ---------- Prayer reminders over any app ----------
 var PRAYER_AR = { fajr: "الفجر", dhuhr: "الظهر", asr: "العصر", maghrib: "المغرب", isha: "العشاء" };
-var prayerTimers = [], prayerPlan = [];
+var prayerPlan = [];
 function city() {
   var list = STATIC.cities || [];
   for (var i = 0; i < list.length; i++) if (list[i].id === prefs.city) return list[i];
@@ -216,10 +220,12 @@ function localYmd(ts) { var d = local(ts); return d.getUTCFullYear() + "-" + (d.
 function isFriday(ts) { return local(ts).getUTCDay() === 5; }
 function localTime(y, m, d, h, min) { return Date.UTC(y, m, d, h, min) - (city().tz || 180) * 60000; }
 
+// The plan for today and tomorrow. Timers are not used for this: LG freezes them while the
+// TV is on standby, and they then fire hours late. A loop checks the real clock instead,
+// and anything that was missed by more than 3 minutes is skipped.
+var planDay = "";
 function schedulePrayers() {
-  prayerTimers.forEach(clearTimeout);
-  prayerTimers = []; prayerPlan = [];
-  var c = city(), now = Date.now();
+  var c = city(), now = Date.now(), plan = [];
   var M = adhan.CalculationMethod, params = (M[c.method] || M.UmmAlQura)();
   [0, 1].forEach(function (dayOffset) {
     var l = local(now + dayOffset * 86400000);
@@ -231,30 +237,38 @@ function schedulePrayers() {
     Object.keys(PRAYER_AR).forEach(function (k) {
       var at = k === "isha" && ramadan ? t.maghrib.getTime() + 120 * 60000 : t[k].getTime();
       var name = k === "dhuhr" && prefs.friday && isFriday(at) ? "الجمعة" : PRAYER_AR[k];
-      if (at > now) {
-        prayerPlan.push({ key: k, name: name, at: new Date(at).toISOString() });
-        prayerTimers.push(setTimeout(function () { atPrayer(k, name, at); }, at - now));
-      }
+      plan.push({ kind: "adhan", key: k, name: name, at: at });
       var before = (prefs.remind || 0) * 60000;
-      if (before && at - before > now) {
-        prayerTimers.push(setTimeout(function () {
-          if (prefs.tvToast) toast("⏳ باقي " + arDigits(prefs.remind) + " دقائق على أذان " + name);
-        }, at - before - now));
-      }
+      if (before) plan.push({ kind: "remind", key: k, name: name, at: at - before });
     });
     // Friday morning: a gentle reminder at 9:00.
     var fri = localTime(y, mo, dd, 9, 0);
-    if (prefs.friday && isFriday(fri) && fri > now) {
-      prayerTimers.push(setTimeout(function () {
-        showMessage({ text: "جمعة مباركة", sub: "لا تنسوا قراءة سورة الكهف والصلاة على النبي ﷺ", kind: "friday" }, false);
-      }, fri - now));
-    }
+    if (prefs.friday && isFriday(fri)) plan.push({ kind: "friday", at: fri });
   });
-  // Re-plan just after local midnight.
-  var l0 = local(now), midnight = localTime(l0.getUTCFullYear(), l0.getUTCMonth(), l0.getUTCDate() + 1, 0, 5);
-  prayerTimers.push(setTimeout(schedulePrayers, midnight - now));
-  note("prayers planned: " + prayerPlan.length + " for " + (c.en || c.id));
+  // Things already past are marked done, so they never fire late.
+  plan.forEach(function (e) { e.done = e.at <= now; });
+  prayerPlan = plan;
+  planDay = localYmd(now);
+  note("prayers planned for " + planDay + " (" + (c.en || c.id) + ")");
 }
+function upcomingPrayers() {
+  var now = Date.now();
+  return prayerPlan.filter(function (e) { return e.kind === "adhan" && e.at > now; })
+    .map(function (e) { return { key: e.key, name: e.name, at: new Date(e.at).toISOString() }; });
+}
+function prayerLoop() {
+  var now = Date.now();
+  if (localYmd(now) !== planDay) schedulePrayers();
+  prayerPlan.forEach(function (e) {
+    if (e.done || now < e.at) return;
+    e.done = true;
+    if (now - e.at > 3 * 60000) { note("skipped late " + e.kind + " " + (e.key || "")); return; }
+    if (e.kind === "adhan") atPrayer(e.key, e.name, e.at);
+    else if (e.kind === "remind") { if (prefs.tvToast) toast("⏳ باقي " + arDigits(prefs.remind) + " دقائق على أذان " + e.name); }
+    else if (e.kind === "friday") showMessage({ text: "جمعة مباركة", sub: "لا تنسوا قراءة سورة الكهف والصلاة على النبي ﷺ", kind: "friday" }, false);
+  });
+}
+setInterval(prayerLoop, 20000);
 
 // At prayer time. On the majlis screen the app shows the alert itself. Over other apps:
 // a notification, plus (if chosen) pausing the video or lowering the volume until the adhan ends.
@@ -380,7 +394,7 @@ function statusInfo(local) {
   return {
     version: VERSION, ip: myIp(), port: PORT, pin: local ? prefs.pin : undefined, ssap: ssap.state, foreground: foreground,
     apps: Object.keys(launchPoints).length, power: power, sleep: sleepInfo(), devmode: devmode,
-    alertNow: alertNow, message: message, nowApp: nowApp(), heartbeat: heartbeat.state, prayers: prayerPlan.slice(0, 6), log: log.slice(-30)
+    alertNow: alertNow, message: message, nowApp: nowApp(), heartbeat: heartbeat.state, prayers: upcomingPrayers().slice(0, 6), log: log.slice(-30)
   };
 }
 

@@ -80,7 +80,7 @@ After a few minutes without use (5 to 30, or off), the screen becomes a slow sli
 
 ![Sleep countdown](../images/tv-sleep.jpg)
 
-If no one has used the TV for a set time (15 minutes, 30 minutes, an hour or 4 hours), a one-minute countdown appears. Any button cancels it and returns to whatever was on; otherwise the TV turns off. Using the remote on the home screen, switching apps or inputs, and using the phone all count as activity.
+If the TV is left on the Majlis screen (or LG's menu) with no one using it for a set time (15 minutes, 30 minutes, an hour or 4 hours), a one-minute countdown appears. Any button cancels it; otherwise the TV turns off. Watching an app, Live TV or an HDMI input never counts as idle, so it won't turn off in the middle of a film.
 
 ## Settings on the TV
 

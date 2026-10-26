@@ -2,7 +2,7 @@
   "use strict";
 
   var SERVICE = "http://127.0.0.1:8090";
-  var SERVICE_VERSION = "4"; // keep in step with VERSION in service/service.js
+  var SERVICE_VERSION = "5"; // keep in step with VERSION in service/service.js
   var APP_ID = "com.majlis.tv";
 
   var CITIES = window.MAJLIS_CITIES || [];
@@ -31,6 +31,8 @@
 
   if (window.MAJLIS_CONFIG) for (var ck in window.MAJLIS_CONFIG) DEFAULTS[ck] = window.MAJLIS_CONFIG[ck];
   var $ = function (id) { return document.getElementById(id); };
+  // Sets text only when it changes, so the per-second updates don't repaint for nothing.
+  function setText(id, text) { var el = $(id); if (el && el.textContent !== text) el.textContent = text; }
   var prefs = loadLocalPrefs();
   var serviceUp = false, status = {}, rev = -1;
 
@@ -258,10 +260,12 @@
     if (!prayerTimes.length) return;
     var n = nextPrayer(now);
     if (n) {
-      $("nextName").textContent = n.ar;
-      $("nextIn").textContent = countdown(n.time - now);
-      $("ambNext").textContent = n.ar + " · " + time12(n.time) + " " + ampm(n.time);
-      $("ambNextIn").textContent = "بعد " + countdown(n.time - now);
+      setText("nextName", n.ar);
+      setText("nextIn", countdown(n.time - now));
+      if (ambientOn) {
+        setText("ambNext", n.ar + " · " + time12(n.time) + " " + ampm(n.time));
+        setText("ambNextIn", "بعد " + countdown(n.time - now));
+      }
       var key = n.key + n.time.getTime();
       if (key !== lastNextKey) {
         lastNextKey = key;
@@ -671,10 +675,11 @@
     var list = $("settingsList");
     list.textContent = "";
     settings.items = [];
-    function row(cls, html, onKey) {
+    function row(cls, html, onKey, imgUrl, imgCls) {
       var el = document.createElement("div");
       el.className = "set-row " + (cls || "");
       el.innerHTML = html;
+      if (imgUrl) el.insertBefore(cachedImg(imgUrl, imgCls), el.firstChild);
       list.appendChild(el);
       settings.items.push({ el: el, key: onKey });
       return el;
@@ -741,7 +746,7 @@
     backgrounds.forEach(function (b, bi) {
       var hidden = bgHidden(b), armed = settings.deleteArm === b.key;
       var val = armed ? "اضغط ◀ مرة ثانية للحذف" : (hidden ? "مخفية" : "ظاهرة") + (bi === prefs.bg ? " · الحالية" : "");
-      row((hidden ? "off" : "") + (armed ? " danger" : ""), '<img class="thumb" src="' + esc(b.file) + '"><div class="set-main">' + esc(b.ar) + '</div><div class="set-val">' + val + "</div>", function (k) {
+      row((hidden ? "off" : "") + (armed ? " danger" : ""), '<div class="set-main">' + esc(b.ar) + '</div><div class="set-val">' + val + "</div>", function (k) {
         if (k === 13) {
           settings.deleteArm = null;
           var h = prefs.hiddenBg.indexOf(b.key);
@@ -756,13 +761,13 @@
           return true;
         }
         if (settings.deleteArm) { settings.deleteArm = null; return true; }
-      });
+      }, b.file, "thumb");
     });
 
     head("التطبيقات · موافق: إظهار/إخفاء · ◀ ▶: تحريك");
     allApps.forEach(function (a) {
       var hidden = prefs.hidden.indexOf(a.id) !== -1, icon = a.icon || a.icon2;
-      row(hidden ? "off" : "", (icon ? '<img src="' + esc(icon) + '">' : "") + '<div class="set-main">' + esc(a.title) + (a.isNew ? ' <span class="new">جديد</span>' : "") + '</div><div class="set-val">' + (hidden ? "مخفي" : "ظاهر") + "</div>", function (k) {
+      row(hidden ? "off" : "", '<div class="set-main">' + esc(a.title) + (a.isNew ? ' <span class="new">جديد</span>' : "") + '</div><div class="set-val">' + (hidden ? "مخفي" : "ظاهر") + "</div>", function (k) {
         var idx = allApps.indexOf(a);
         if (k === 13) { var h = prefs.hidden.indexOf(a.id); if (h === -1) prefs.hidden.push(a.id); else prefs.hidden.splice(h, 1); savePrefs(["hidden"]); return true; }
         if (k === 37 || k === 39) {
@@ -774,13 +779,27 @@
           settings.i += (k === 39 ? -1 : 1);
           return true;
         }
-      });
+      }, icon, "");
     });
     row("button", '<div class="set-main" style="text-align:center">تم</div>', function (k) { if (k === 13) closeOverlay(); });
 
     settings.i = Math.max(0, Math.min(settings.items.length - 1, settings.i));
     while (settings.i < settings.items.length - 1 && !settings.items[settings.i].key) settings.i++;
     settingsFocus();
+  }
+  // Settings is redrawn on every change; reusing the same <img> elements means the
+  // background photos aren't decoded again each time (that made Settings stutter).
+  var imgCache = {};
+  function cachedImg(url, cls) {
+    var key = url + "|" + cls;
+    if (!imgCache[key]) {
+      var im = document.createElement("img");
+      if (cls) im.className = cls;
+      im.onerror = function () { im.style.visibility = "hidden"; };
+      im.src = url;
+      imgCache[key] = im;
+    }
+    return imgCache[key];
   }
   function settingsFocus() {
     settings.items.forEach(function (it, i) { it.el.classList.toggle("focus", i === settings.i); });

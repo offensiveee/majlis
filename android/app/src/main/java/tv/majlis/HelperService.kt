@@ -55,7 +55,7 @@ class HelperService : Service() {
         if (!prefs.has("pin")) { prefs.put("pin", (1000 + Random.nextInt(9000)).toString()); savePrefs() }
         server = HttpServer(PORT, ::handle).also { it.start() }
         main.postDelayed(object : Runnable {
-            override fun run() { checkEvents(); main.postDelayed(this, 20_000) }
+            override fun run() { checkEvents(); prayerLoop(); main.postDelayed(this, 20_000) }
         }, 20_000)
         note("helper started")
     }
@@ -246,26 +246,35 @@ class HelperService : Service() {
     }
 
     // ---------- Prayer alerts over other apps ----------
-    private val prayerTimers = ArrayList<Runnable>()
+    // A loop checks the real clock every 20 s instead of long timers, which can fire hours
+    // late after the TV sleeps. Anything missed by more than 3 minutes is skipped.
+    private class Planned(val kind: String, val key: String, val name: String, val at: Long) { var done = false }
+    private val plan = ArrayList<Planned>()
 
     private fun schedulePrayers() = main.post {
-        prayerTimers.forEach { main.removeCallbacks(it) }
-        prayerTimers.clear()
+        plan.clear()
         val now = System.currentTimeMillis()
         val remind = prefs.optInt("remind", 10) * 60_000L
         for (i in 0 until prayers.length()) {
             val o = prayers.getJSONObject(i)
             val at = o.optLong("at"); val name = o.optString("name"); val key = o.optString("key")
-            if (at > now) later(at - now) { atPrayer(key, name, at) }
-            if (remind > 0 && at - remind > now) later(at - remind - now) {
-                if (prefs.optBoolean("tvToast", true) && MainActivity.visible == null) toast("⏳ باقي " + arabicDigits(prefs.optInt("remind", 10)) + " دقائق على أذان " + name)
-            }
+            plan.add(Planned("adhan", key, name, at))
+            if (remind > 0) plan.add(Planned("remind", key, name, at - remind))
         }
+        plan.forEach { it.done = it.at <= now }
         note("prayers planned: ${prayers.length()}")
     }
 
-    private fun later(delay: Long, block: () -> Unit) {
-        val r = Runnable(block); prayerTimers.add(r); main.postDelayed(r, delay)
+    private fun prayerLoop() {
+        val now = System.currentTimeMillis()
+        for (e in plan) {
+            if (e.done || now < e.at) continue
+            e.done = true
+            if (now - e.at > 3 * 60_000) { note("skipped late ${e.kind} ${e.key}"); continue }
+            if (e.kind == "adhan") atPrayer(e.key, e.name, e.at)
+            else if (prefs.optBoolean("tvToast", true) && MainActivity.visible == null)
+                toast("⏳ باقي " + arabicDigits(prefs.optInt("remind", 10)) + " دقائق على أذان " + e.name)
+        }
     }
 
     private var focusRequest: AudioFocusRequest? = null

@@ -52,7 +52,7 @@ It runs on the TV itself. Once it's installed you don't need a computer, a cloud
 - Calm mode: a slow photo slideshow with the time, a verse, the 3-day forecast and the next prayer, instead of LG's screensaver
 - The Home button opens Majlis instead of LG's launcher
 - New apps you install appear automatically; reorder or hide any of them
-- An optional energy-saving timer turns the TV off when no one is using it, after a one-minute warning
+- An optional energy-saving timer turns the TV off when it's left idle on the Majlis screen (never while you're watching), after a one-minute warning
 
 **Your phone**
 - Swipe touchpad and buttons, volume, open any app, turn the TV off
