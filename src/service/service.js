@@ -5,7 +5,7 @@
 // - Sends the Home button back to our screen, lists installed apps
 // - Renews Developer Mode and restarts itself after a reboot
 // LG blocks most Luna calls for developer apps, so it talks to the TV's own
-// remote-control API (SSAP, wss://127.0.0.1:3001) with a key paired during setup.
+// remote-control API (SSAP, wss://<TV LAN IP>:3001) with a key paired during setup.
 var Service = require("webos-service");
 var WS = require("ws");
 var fs = require("fs");
@@ -76,7 +76,9 @@ function ssapSend(type, uri, payload, cb, keep) {
 function request(uri, payload, cb) { ssapSend("request", uri, payload || {}, cb); }
 
 function connect() {
-  var ws = new WS("wss://127.0.0.1:3001", { rejectUnauthorized: false });
+  // Newer firmware closes SSAP connections made to 127.0.0.1 with code 1008
+  // (policy violation); the TV accepts the same connection on its LAN address.
+  var ws = new WS("wss://" + (myIp() || "127.0.0.1") + ":3001", { rejectUnauthorized: false });
   ssap.ws = ws; ssap.cbs = {}; ssap.subs = {};
   ws.on("open", function () {
     ssap.state = "registering";
@@ -87,6 +89,7 @@ function connect() {
   ws.on("message", function (data) {
     var m; try { m = JSON.parse(data); } catch (e) { return; }
     if (m.id === "reg") {
+      if (m.type !== "registered") note("ssap reg " + m.type + " " + (m.error || JSON.stringify(m.payload || {}).slice(0, 150)));
       if (m.type === "registered") {
         ssap.state = "connected"; note("ssap registered");
         if (m.payload && m.payload["client-key"] && m.payload["client-key"] !== KEY) {
@@ -101,8 +104,8 @@ function connect() {
     if (cb) { delete ssap.cbs[m.id]; cb(m); return; }
     if (ssap.subs[m.id]) ssap.subs[m.id](m);
   });
-  ws.on("close", function () { ssap.state = "reconnecting"; pointer.ws = null; setTimeout(connect, 3000); });
-  ws.on("error", function (e) { ssap.state = "error " + e.message; });
+  ws.on("close", function (code) { note("ssap closed " + code); ssap.state = "reconnecting"; pointer.ws = null; setTimeout(connect, 3000); });
+  ws.on("error", function (e) { ssap.state = "error " + e.message; note("ssap error " + e.message); });
 }
 
 function subscribe() {
