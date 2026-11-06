@@ -66,6 +66,7 @@ var PAIRING = readJson(path.join(__dirname, "pairing.json"), {});
 var KEY = readText(path.join(__dirname, "ssap-key.txt"));
 var ssap = { ws: null, n: 0, cbs: {}, subs: {}, state: "starting" };
 var launchPoints = {}, foreground = "";
+var connectedInputs = null;
 
 function ssapSend(type, uri, payload, cb, keep) {
   if (!ssap.ws || ssap.ws.readyState !== 1) { if (cb) cb({ type: "error", error: "not connected", payload: {} }); return; }
@@ -109,6 +110,12 @@ function connect() {
 }
 
 function subscribe() {
+  ssapSend("subscribe", "ssap://tv/getExternalInputList", {}, function (m) {
+    var d = m.payload && m.payload.devices;
+    if (!d) { note("inputs: " + (m.error || "no list")); return; }
+    connectedInputs = d.filter(function (x) { return x.connected; }).map(function (x) { return x.appId; });
+    note("inputs connected: " + (connectedInputs.join(", ") || "none"));
+  }, true);
   ssapSend("subscribe", "ssap://com.webos.applicationManager/listLaunchPoints", {}, function (m) {
     var p = m.payload || {};
     if (p.launchPoints) { launchPoints = {}; p.launchPoints.forEach(function (lp) { launchPoints[lp.id] = lp; }); note("apps " + p.launchPoints.length); }
@@ -379,7 +386,7 @@ function savePhoto(buf, ext) {
   return name;
 }
 function appsList() {
-  var out = { apps: [], inputs: [] };
+  var out = { apps: [], inputs: [], connected: connectedInputs };
   Object.keys(launchPoints).forEach(function (id) {
     if (HIDE.test(id)) return;
     var lp = launchPoints[id];

@@ -473,6 +473,13 @@
   var BASE = window.HOME_APPS || [], BASE_RANK = {};
   BASE.forEach(function (a, i) { BASE_RANK[a.id] = i; });
   var allApps = [], inputs = window.Platform.inputs((window.HOME_INPUTS || []).slice()), serviceApps = null;
+  var connectedInputs = null, lastAppsSig = "";
+  function shownInputs() {
+    return inputs.filter(function (x) {
+      if (x.id === "com.webos.app.livetv") return false;
+      return !connectedInputs || connectedInputs.indexOf(x.id) !== -1;
+    });
+  }
   function mergeApps() {
     var byId = {};
     BASE.forEach(function (a) { byId[a.id] = { id: a.id, title: a.title, icon: a.icon, bg: a.bg }; });
@@ -547,7 +554,7 @@
     var actionEls = Array.prototype.slice.call(document.querySelectorAll(".action"));
     rows = [{ items: actionEls.map(function (el) { return { el: el, act: el.getAttribute("data-act") }; }) }];
     buildRow("apps", visibleApps(), false);
-    if (inputs.length) buildRow("inputs", inputs, true);
+    var shown = shownInputs(); if (shown.length) buildRow("inputs", shown, true);
     setFocus(keep.r, keep.c);
   }
   function setFocus(r, c) {
@@ -1002,8 +1009,9 @@
   function refreshApps() {
     get("/api/apps", function (r) {
       if (!r || !r.apps) return;
-      var sig = r.apps.map(function (a) { return a.id; }).join(",");
-      if (serviceApps && sig === serviceApps.map(function (a) { return a.id; }).join(",")) return;
+      var sig = r.apps.map(function (a) { return a.id; }).join(",") + "|" + (r.connected ? r.connected.join(",") : "?");
+      if (serviceApps && sig === lastAppsSig) return;
+      lastAppsSig = sig; connectedInputs = r.connected || null;
       serviceApps = r.apps;
       mergeApps();
       if (!openId) render();
