@@ -48,7 +48,7 @@ It runs on the TV itself. Once it's installed you don't need a computer, a cloud
 - A guest Wi-Fi card: guests scan a QR code and join without asking for the password
 
 **The screen**
-- Three themes, six accent colours, six frames and seven backgrounds, including Najdi Sadu and desert dusk, plus your own photos
+- Four themes, six accent colours, six frames and seven backgrounds, including Najdi Sadu and desert dusk, plus your own photos
 - Calm mode: a slow photo slideshow with the time, a verse, the 3-day forecast and the next prayer, instead of LG's screensaver
 - The Home button opens Majlis instead of LG's launcher
 - New apps you install appear automatically; reorder or hide any of them

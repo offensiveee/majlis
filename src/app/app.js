@@ -8,9 +8,9 @@
   var CITIES = window.MAJLIS_CITIES || [];
   var STATIONS = window.MAJLIS_STATIONS || [];
   var PRAYERS = window.MAJLIS_PRAYERS || [];
-  var THEMES = [{ id: "gold", ar: "ذهبي" }, { id: "emerald", ar: "زمردي" }, { id: "sadu", ar: "سدو أحمر" }];
+  var THEMES = [{ id: "gold", ar: "ذهبي" }, { id: "emerald", ar: "زمردي" }, { id: "sadu", ar: "سدو أحمر" }, { id: "tiffany", ar: "تيفاني" }];
   var AMBIENT = [0, 5, 10, 15, 30];
-  var SLIDESHOW = [0, 10, 30, 60];
+  var SLIDESHOW = [0, 1, 5, 10, 30, 60];
   var REMIND = [0, 5, 10, 15];
   var SLEEP = [0, 15, 30, 60, 240];
   var ADHANS = window.MAJLIS_ADHANS || [];
@@ -108,7 +108,7 @@
 
   // ---------- Texts & theme ----------
   function applyTexts() {
-    document.body.className = "theme-" + (prefs.theme || "gold") + (prefs.accent ? " accent-" + prefs.accent : "") + " frame-" + (prefs.frame || "palace");
+    document.body.className = "theme-" + (prefs.theme || "gold") + (prefs.accent ? " accent-" + prefs.accent : "") + " frame-" + (prefs.frame || "palace") + (document.body.classList.contains("bright-bg") ? " bright-bg" : "");
     $("majlisName").textContent = prefs.majlisName || "";
     $("majlisNameEn").textContent = prefs.majlisNameEn || "";
     $("welcome").textContent = prefs.welcome || "";
@@ -428,7 +428,7 @@
   // ---------- Backgrounds ----------
   var backgrounds = [], photos = [];
   function buildBackgrounds() {
-    backgrounds = (window.MAJLIS_BACKGROUNDS || []).map(function (b) { return { key: b.file, file: b.file, ar: b.ar, en: b.en, scrim: b.scrim }; });
+    backgrounds = (window.MAJLIS_BACKGROUNDS || []).map(function (b) { return { key: b.file, file: b.file, ar: b.ar, en: b.en, scrim: b.scrim, tint: b.tint, bright: b.bright }; });
     photos.forEach(function (p, i) { backgrounds.push({ key: "photo:" + p.name, photo: p.name, file: SERVICE + "/photos/" + encodeURIComponent(p.name), ar: "صورة " + arDigits(i + 1), en: "Photo " + (i + 1), scrim: 0.45 }); });
   }
   function bgHidden(b) { return (prefs.hiddenBg || []).indexOf(b.key) !== -1; }
@@ -453,6 +453,8 @@
       next.classList.add("on"); cur.classList.remove("on");
       bgLayer = 1 - bgLayer;
       $("scrim").style.opacity = b.scrim == null ? 0.5 : b.scrim;
+      if (b.tint) $("scrim").style.setProperty("--scrim-rgb", b.tint); else $("scrim").style.removeProperty("--scrim-rgb");
+      document.body.classList.toggle("bright-bg", !!b.bright);
     };
     img.src = b.file;
   }
@@ -471,6 +473,13 @@
   var BASE = window.HOME_APPS || [], BASE_RANK = {};
   BASE.forEach(function (a, i) { BASE_RANK[a.id] = i; });
   var allApps = [], inputs = window.Platform.inputs((window.HOME_INPUTS || []).slice()), serviceApps = null;
+  var connectedInputs = null, lastAppsSig = "";
+  function shownInputs() {
+    return inputs.filter(function (x) {
+      if (x.id === "com.webos.app.livetv") return false;
+      return !connectedInputs || connectedInputs.indexOf(x.id) !== -1;
+    });
+  }
   function mergeApps() {
     var byId = {};
     BASE.forEach(function (a) { byId[a.id] = { id: a.id, title: a.title, icon: a.icon, bg: a.bg }; });
@@ -542,10 +551,13 @@
   function render() {
     var keep = { r: focus.r, c: focus.c };
     $("rows").textContent = "";
+    // LG home only means something on webOS (and in the browser preview).
+    var lgHome = document.querySelector(".action[data-act=lghome]");
+    if (lgHome && Platform.id !== "webos" && Platform.id !== "browser") lgHome.parentNode.removeChild(lgHome);
     var actionEls = Array.prototype.slice.call(document.querySelectorAll(".action"));
     rows = [{ items: actionEls.map(function (el) { return { el: el, act: el.getAttribute("data-act") }; }) }];
     buildRow("apps", visibleApps(), false);
-    if (inputs.length) buildRow("inputs", inputs, true);
+    var shown = shownInputs(); if (shown.length) buildRow("inputs", shown, true);
     setFocus(keep.r, keep.c);
   }
   function setFocus(r, c) {
@@ -577,6 +589,7 @@
     else if (act === "ambient") enterAmbient();
     else if (act === "bg") changeBackground(1);
     else if (act === "settings") openOverlay("settings");
+    else if (act === "lghome") post("/api/lghome", {}, function (ok) { if (!ok) toast("تعذر فتح الشاشة الرئيسية"); });
   }
   // Rows flow right-to-left, so the Right key moves to the previous item.
   function mainKey(k) {
@@ -1000,8 +1013,9 @@
   function refreshApps() {
     get("/api/apps", function (r) {
       if (!r || !r.apps) return;
-      var sig = r.apps.map(function (a) { return a.id; }).join(",");
-      if (serviceApps && sig === serviceApps.map(function (a) { return a.id; }).join(",")) return;
+      var sig = r.apps.map(function (a) { return a.id; }).join(",") + "|" + (r.connected ? r.connected.join(",") : "?");
+      if (serviceApps && sig === lastAppsSig) return;
+      lastAppsSig = sig; connectedInputs = r.connected || null;
       serviceApps = r.apps;
       mergeApps();
       if (!openId) render();
