@@ -66,6 +66,7 @@ var PAIRING = readJson(path.join(__dirname, "pairing.json"), {});
 var KEY = readText(path.join(__dirname, "ssap-key.txt"));
 var ssap = { ws: null, n: 0, cbs: {}, subs: {}, state: "starting" };
 var launchPoints = {}, foreground = "";
+var takeoverPaused = false;
 var connectedInputs = null;
 
 function ssapSend(type, uri, payload, cb, keep) {
@@ -129,14 +130,15 @@ function subscribe() {
     note("foreground " + id);
     if (sleep.ignoreFg && id === APP_ID) sleep.ignoreFg = false;
     else activity("app " + id);
-    if (prefs.takeover && LG_HOME.indexOf(id) !== -1) launch(APP_ID);
+    if (LG_HOME.indexOf(id) === -1) takeoverPaused = false;
+    if (prefs.takeover && !takeoverPaused && LG_HOME.indexOf(id) !== -1) launch(APP_ID);
   }, true);
   ssapSend("subscribe", "ssap://com.webos.service.tvpower/power/getPowerState", {}, function (m) {
     var st = m.payload && m.payload.state;
     if (!st || st === power) return;
     power = st;
     note("power " + st);
-    if (st === "Active") { activity("power on"); prayerLoop(); }
+    if (st === "Active") { activity("power on"); takeoverPaused = false; prayerLoop(); }
   }, true);
 }
 
@@ -510,6 +512,11 @@ http.createServer(function (req, res) {
     return request(uri, a === "mute" ? { mute: q.on !== "0" } : {}, function (m) { send(res, 200, m.payload || {}); });
   }
   if (p === "/api/launch") { launch(String(q.id || ""), function (ok) { send(res, ok ? 200 : 500, { ok: ok }); }); return; }
+  if (p === "/api/lghome") {
+    takeoverPaused = true; note("LG home requested");
+    launch(LG_HOME[0], function (ok) { if (ok) return send(res, 200, { ok: true }); launch(LG_HOME[2], function (ok2) { send(res, ok2 ? 200 : 500, { ok: ok2 }); }); });
+    return;
+  }
   if (p === "/api/home") { launch(APP_ID, function (ok) { send(res, ok ? 200 : 500, { ok: ok }); }); return; }
   if (p === "/api/toast") { return jsonBody(req, function (v) { showMessage({ text: v.message, sub: v.sub }, !!v.fullscreen); send(res, 200, { ok: true }); }); }
   if (p === "/api/power" && q.action === "off") { request("ssap://system/turnOff", {}, function () { send(res, 200, { ok: true }); }); return; }

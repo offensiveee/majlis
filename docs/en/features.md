@@ -13,7 +13,7 @@ From top to bottom:
 - **Prayer times**: today's five prayers and sunrise; the next one is highlighted with a countdown
 - **Clock and dates**: the day in Arabic and English, the Hijri date (Umm al-Qura) and the Gregorian date
 - **Welcome**: a welcome line, a second line you set, and a short verse that changes every 20 minutes
-- **Shortcuts**: Quran radio, guest Wi-Fi, calm mode, background and settings
+- **Shortcuts**: Quran radio, guest Wi-Fi, calm mode, background, LG home (opens LG's home screen; Majlis takes over Home again once you open an app or restart the TV) and settings
 - **Apps and inputs**: your apps (new ones appear automatically), then Live TV and HDMI inputs
 
 ### Remote shortcuts
