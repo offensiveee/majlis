@@ -43,6 +43,8 @@ window.MAJLIS_STATIONS = [
   { "id": "roqiah", "ar": "الرقية الشرعية", "sub": "متنوعة", "url": "https://backup.qurango.net/radio/roqiah" }
 ];
 
+// Optional per background: "tint": "R, G, B" colours the dark overlay to match the image,
+// and "bright": true adds a stronger overlay and text shadow for light images.
 window.MAJLIS_BACKGROUNDS = [
   { "file": "backgrounds/dunes.jpg", "ar": "كثبان الغروب", "en": "Desert Dusk", "scrim": 0.35 },
   { "file": "backgrounds/sadu.jpg", "ar": "سدو", "en": "Sadu", "scrim": 0.72 },

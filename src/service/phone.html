@@ -371,7 +371,7 @@
   var qa = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var PIN = ""; try { PIN = localStorage.getItem("majlisPin") || ""; } catch (e) {}
   var state = { prefs: {}, status: {} }, data = {}, apps = [];
-  var THEMES = [{ id: "gold", ar: "ذهبي", c: "linear-gradient(135deg,#4a2a12,#140c07)" }, { id: "emerald", ar: "زمردي", c: "linear-gradient(135deg,#0f4433,#04140f)" }, { id: "sadu", ar: "سدو", c: "linear-gradient(135deg,#7a1a1a,#170606)" }];
+  var THEMES = [{ id: "gold", ar: "ذهبي", c: "linear-gradient(135deg,#4a2a12,#140c07)" }, { id: "emerald", ar: "زمردي", c: "linear-gradient(135deg,#0f4433,#04140f)" }, { id: "sadu", ar: "سدو", c: "linear-gradient(135deg,#7a1a1a,#170606)" }, { id: "tiffany", ar: "تيفاني", c: "linear-gradient(135deg,#81d8d0,#0a4a4a 60%,#031416)" }];
   var ACCENTS = [{ id: "", ar: "ذهبي", c: "#dcb56a" }, { id: "silver", ar: "فضي", c: "#c9cfd6" }, { id: "bronze", ar: "نحاسي", c: "#c98c5c" }, { id: "rose", ar: "وردي", c: "#d8a293" }, { id: "turquoise", ar: "فيروزي", c: "#6cc3bf" }, { id: "pearl", ar: "لؤلؤي", c: "#efe8d8" }];
   var FRAMES = [
     { id: "palace", ar: "قصر", s: '<rect x="4" y="4" width="92" height="52" rx="2" fill="none" stroke="currentColor"/><path d="M4 18V8a4 4 0 0 1 4-4h10M96 18V8a4 4 0 0 0-4-4H82M4 42v10a4 4 0 0 0 4 4h10M96 42v10a4 4 0 0 1-4 4H82" stroke="currentColor" stroke-width="2.4" fill="none"/>' },

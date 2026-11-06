@@ -32,7 +32,7 @@ From top to bottom:
 | ![Emerald theme with Mashrabiya frame](../images/tv-home-emerald.jpg) | ![Sadu theme with Najdi frame](../images/tv-home-sadu.jpg) |
 | Emerald theme, Mashrabiya frame | Sadu theme, Najdi frame |
 
-- **Themes**: Gold, Emerald, Sadu red
+- **Themes**: Gold, Emerald, Sadu red, Tiffany. The phone page follows the theme you pick.
 - **Accent colours**: gold, silver, bronze, rose gold, turquoise, pearl
 - **Frames**: Palace, Najdi, Mashrabiya, Mihrab, Minimal, none
 - **Backgrounds**: Desert dusk, Sadu, Mashrabiya, Palace arches, Royal damask, Wood, Beige marble, and your own photos. Any of them can be hidden, and they can change on a timer.

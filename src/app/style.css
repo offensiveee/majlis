@@ -27,6 +27,13 @@
   --focus-bg: rgba(122, 24, 24, .9); --base: #170606;
 }
 
+.theme-tiffany {
+  --gold: #81d8d0; --gold-light: #c6f2ed; --gold-dark: #3f9c95;
+  --cream: #effbf9; --muted: rgba(239, 251, 249, .74);
+  --panel: rgba(3, 30, 32, .62); --panel-strong: rgba(4, 32, 34, .92); --panel-line: rgba(129, 216, 208, .42);
+  --focus-bg: rgba(14, 92, 90, .9); --base: #031416; --scrim-rgb: 2, 20, 22; --accent-rgb: 129, 216, 208;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   width: 1920px; height: 1080px; overflow: hidden; position: relative;
@@ -42,9 +49,14 @@ html, body {
 .bg.on { opacity: 1; }
 .scrim {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-  background: linear-gradient(to bottom, rgba(12, 6, 2, .6) 0%, rgba(12, 6, 2, .25) 30%, rgba(12, 6, 2, .3) 55%, rgba(12, 6, 2, .85) 100%);
+  background: linear-gradient(to bottom, rgba(var(--scrim-rgb, 12, 6, 2), .6) 0%, rgba(var(--scrim-rgb, 12, 6, 2), .25) 30%, rgba(var(--scrim-rgb, 12, 6, 2), .3) 55%, rgba(var(--scrim-rgb, 12, 6, 2), .85) 100%);
   transition: opacity 1.4s ease;
 }
+/* Bright backgrounds: darker overlay behind the text, firmer shadows. */
+body.bright-bg .scrim { background: linear-gradient(to bottom, rgba(var(--scrim-rgb, 12, 6, 2), .72) 0%, rgba(var(--scrim-rgb, 12, 6, 2), .5) 28%, rgba(var(--scrim-rgb, 12, 6, 2), .5) 58%, rgba(var(--scrim-rgb, 12, 6, 2), .9) 100%); }
+body.bright-bg .time, body.bright-bg .day, body.bright-bg .dates, body.bright-bg .welcome-main, body.bright-bg .welcome-sub, body.bright-bg .ayah,
+body.bright-bg .title-ar, body.bright-bg .title-en, body.bright-bg .amb-welcome { text-shadow: 0 0 3px rgba(0, 0, 0, .55), 0 2px 18px rgba(0, 0, 0, .8); }
+body.bright-bg .tile .label, body.bright-bg .action { text-shadow: 0 0 3px rgba(0, 0, 0, .7), 0 2px 10px rgba(0, 0, 0, .9); }
 .frame-screen { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 1920px; height: 1080px; pointer-events: none; }
 
 /* ---------- Header ---------- */
@@ -95,7 +107,7 @@ html, body {
 .p-row.past { opacity: .5; }
 .p-row.sunrise { font-size: 17px; opacity: .65; line-height: 1.5; }
 .p-row.sunrise .p-time { font-size: 21px; }
-.p-row.next { background: linear-gradient(90deg, rgba(220, 181, 106, .08), rgba(220, 181, 106, .28)); border: 1px solid var(--panel-line); color: var(--gold-light); opacity: 1; }
+.p-row.next { background: linear-gradient(90deg, rgba(var(--accent-rgb, 220, 181, 106), .08), rgba(var(--accent-rgb, 220, 181, 106), .28)); border: 1px solid var(--panel-line); color: var(--gold-light); opacity: 1; }
 
 .clock-block {
   position: absolute; top: 20px; left: 50%; width: 900px; margin-left: -450px;
@@ -269,7 +281,7 @@ html, body {
 /* ---------- Message card (like calm mode, closes on any button) ---------- */
 .msg-card {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center;
-  background-color: #0b0603; background-size: cover; background-position: center;
+  background-color: var(--base); background-size: cover; background-position: center;
   opacity: 0; visibility: hidden; transition: opacity .8s ease;
 }
 .msg-card.show { opacity: 1; visibility: visible; }
